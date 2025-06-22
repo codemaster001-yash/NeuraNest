@@ -942,7 +942,7 @@
 
             // Initialize the game
             initGame();
-
+            localStorage.setItem('score_color_tracking', score);
             // Event listeners
             startBtn.addEventListener('click', startGame);
             pauseBtn.addEventListener('click', pauseGame);
