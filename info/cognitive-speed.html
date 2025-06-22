@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Cognitive Speed</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* General styles and variable definitions - adapted for Cognitive Speed theme */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #40002B;
+            /* Dark plum */
+            --secondary: #600B47;
+            /* Slightly lighter plum */
+            --accent: #ADD8E6;
+            /* Light blue accent */
+            --highlight: #F0E68C;
+            /* Khaki/yellow highlight */
+            --text-light: #FFFFFF;
+            --card-bg: rgba(255, 255, 255, 0.08);
+            --card-back-bg: rgba(96, 11, 71, 0.9);
+            /* Darker back for this theme */
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--text-light);
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--accent), var(--highlight));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.8;
+            max-width: 800px;
+            margin: auto;
+        }
+
+        .infographic-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            position: relative;
+            perspective: 1000px;
+            /* Needed for 3D flip effect */
+        }
+
+        /* Card specific styles */
+        .card-wrapper {
+            background: transparent;
+            border-radius: 20px;
+            height: 100%;
+            min-height: 320px;
+            display: flex;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.8s;
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+        }
+
+        /* Hover effect for the card container */
+        .card:hover {
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Card inner faces (front and back) */
+        .card-front,
+        .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 20px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: left;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            overflow-y: hidden;
+        }
+
+        .card-front {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            z-index: 2;
+        }
+
+        .card-back {
+            background: var(--card-back-bg);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(12px);
+            transform: rotateY(180deg);
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            font-size: 1.05rem;
+            line-height: 1.5;
+            padding: 20px;
+            text-align: left;
+            overflow-y: auto;
+        }
+
+        .card-back ul {
+            list-style-type: disc;
+            padding-left: 20px;
+            margin: 0;
+            width: 100%;
+        }
+
+        .card-back ul li {
+            margin-bottom: 8px;
+        }
+
+        .card-back ul li:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Flip state for the card */
+        .card.is-flipped {
+            transform: rotateY(180deg);
+        }
+
+        /* Icon styles */
+        .card-front .icon {
+            font-size: 3.2rem;
+            margin-bottom: 15px;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            flex-shrink: 0;
+        }
+
+        .card-front h2 {
+            font-size: 1.3rem;
+            color: var(--highlight);
+            margin-bottom: 10px;
+        }
+
+        .card-front p {
+            font-size: 0.95rem;
+            line-height: 1.5;
+            opacity: 0.9;
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Main card specific styling */
+        .main-card-wrapper {
+            grid-column: 1 / -1;
+            min-height: 300px;
+        }
+
+        .main-card-front {
+            flex-direction: row;
+            gap: 20px;
+            text-align: left;
+            align-items: center;
+        }
+
+        .main-card-front .icon {
+            font-size: 5.5rem;
+            width: 140px;
+            height: 140px;
+            margin-bottom: 0;
+        }
+
+        .main-card-front div {
+            flex-grow: 1;
+        }
+
+        .main-card-back {
+            text-align: left;
+            padding: 25px;
+        }
+
+        /* Icon colors (adapted for Cognitive Speed) */
+        .icon.speed-brain {
+            color: var(--accent);
+            /* Brain/speed icon for main card */
+        }
+
+        .icon.aging {
+            color: #FFA07A;
+            /* Light salmon for aging */
+        }
+
+        .icon.exercise-brain {
+            color: #8FBC8F;
+            /* Dark sea green for mental exercise */
+        }
+
+        .icon.decision {
+            color: #BA55D3;
+            /* Medium orchid for decision-making */
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+
+            .header h1 {
+                font-size: 2.2rem;
+            }
+
+            .header p {
+                font-size: 1rem;
+            }
+
+            .infographic-grid {
+                gap: 20px;
+            }
+
+            .card-wrapper {
+                min-height: 220px;
+            }
+
+            .main-card-wrapper {
+                min-height: 280px;
+            }
+
+            .main-card-front {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+
+            .main-card-front .icon {
+                font-size: 4.5rem;
+                width: 100px;
+                height: 100px;
+                margin-bottom: 10px;
+            }
+
+            .card-front .icon {
+                font-size: 2.8rem;
+                width: 70px;
+                height: 70px;
+                margin-bottom: 10px;
+            }
+
+            .card-front h2 {
+                font-size: 1.5rem;
+            }
+
+            .card-front p,
+            .card-back p {
+                font-size: 0.9rem;
+                line-height: 1.4;
+            }
+
+            .card-back ul {
+                padding-left: 15px;
+            }
+
+            .card-front,
+            .card-back {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .header p {
+                font-size: 0.9rem;
+            }
+
+            .card-front h2 {
+                font-size: 1.3rem;
+            }
+
+            .card-front p,
+            .card-back p {
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <header class="header">
+            <h1>Think Fast: Cognitive Speed</h1>
+            <p>Understand Cognitive Speed: Your brain's ability to process information rapidly and efficiently.</p>
+        </header>
+
+        <div class="infographic-grid">
+            <!-- Main Definition Card -->
+            <div class="card-wrapper main-card-wrapper">
+                <div class="card" onclick="this.classList.toggle('is-flipped')">
+                    <div class="card-front main-card-front">
+                        <div class="icon speed-brain">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <div>
+                            <h2>What is Cognitive Speed?</h2>
+                            <p>Cognitive speed is how quickly your brain can perform simple, repetitive tasks, like
+                                recognizing numbers, finding patterns, or reacting to a stimulus. It's about mental
+                                fluency and efficiency.</p>
+                        </div>
+                    </div>
+                    <div class="card-back main-card-back">
+                        <ul>
+                            <li><strong>Rapid Task Execution:</strong> Ability to quickly complete simple, routine
+                                mental tasks.</li>
+                            <li><strong>Mental Fluency:</strong> Reflects the efficiency of information processing in
+                                the brain.</li>
+                            <li><strong>Foundation for Cognition:</strong> Supports more complex cognitive functions
+                                like reasoning.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 1: Declines gradually with age -->
+            <div class="card-wrapper">
+                <div class="card" onclick="this.classList.toggle('is-flipped')">
+                    <div class="card-front">
+                        <div class="icon aging">
+                            <i class="fas fa-hourglass-half"></i>
+                        </div>
+                        <h2>Age-Related Changes</h2>
+                        <p>While often subtle, cognitive speed typically experiences a gradual decline as we age. This
+                            means tasks that were once quick may take a little longer over time.</p>
+                    </div>
+                    <div class="card-back">
+                        <ul>
+                            <li><strong>Natural Slowing:</strong> Processing speed tends to decrease progressively from
+                                middle age onwards.</li>
+                            <li><strong>Varied Impact:</strong> The rate of decline can vary significantly between
+                                individuals.</li>
+                            <li><strong>Compensatory Strategies:</strong> Older adults often use experience and
+                                knowledge to compensate for slower speed.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2: Can be maintained with regular mental exercise -->
+            <div class="card-wrapper">
+                <div class="card" onclick="this.classList.toggle('is-flipped')">
+                    <div class="card-front">
+                        <div class="icon exercise-brain">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <h2>Maintain with Exercise</h2>
+                        <p>Just like physical fitness, regular mental exercise can help maintain and even improve
+                            cognitive speed, keeping your brain sharp and responsive.</p>
+                    </div>
+                    <div class="card-back">
+                        <ul>
+                            <li><strong>Brain Games:</strong> Puzzles, strategy games, and memory challenges can improve
+                                processing speed.</li>
+                            <li><strong>Learning New Skills:</strong> Acquiring new, complex skills stimulates neural
+                                pathways.</li>
+                            <li><strong>Physical Activity:</strong> Exercise indirectly boosts cognitive function and
+                                brain health.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3: Essential for quick decision-making -->
+            <div class="card-wrapper">
+                <div class="card" onclick="this.classList.toggle('is-flipped')">
+                    <div class="card-front">
+                        <div class="icon decision">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <h2>Key for Decisions</h2>
+                        <p>Cognitive speed is crucial for making rapid decisions, especially in situations requiring
+                            quick responses, from driving a car to participating in fast-paced conversations.</p>
+                    </div>
+                    <div class="card-back">
+                        <ul>
+                            <li><strong>Driving:</strong> Rapidly interpreting road signs and reacting to traffic
+                                changes.</li>
+                            <li><strong>Sports:</strong> Quick processing of game situations to make split-second moves.
+                            </li>
+                            <li><strong>Conversation:</strong> Fast comprehension of speech and formulation of timely
+                                responses.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

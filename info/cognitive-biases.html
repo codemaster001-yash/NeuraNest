@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Cognitive Biases</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* General styles and variable definitions - adapted for Cognitive Biases theme */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #2C0040;
+            /* Dark purple */
+            --secondary: #4A0B60;
+            /* Slightly lighter purple */
+            --accent: #FFC0CB;
+            /* Pink accent */
+            --highlight: #9370DB;
+            /* Medium Purple highlight */
+            --text-light: #FFFFFF;
+            --card-bg: rgba(255, 255, 255, 0.08);
+            --card-back-bg: rgba(74, 11, 96, 0.9);
+            /* Darker back for this theme */
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--text-light);
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--accent), var(--highlight));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.8;
+            max-width: 800px;
+            margin: auto;
+        }
+
+        .infographic-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            position: relative;
+            perspective: 1000px;
+            /* Needed for 3D flip effect */
+        }
+
+        /* Card specific styles */
+        .card-wrapper {
+            background: transparent;
+            border-radius: 20px;
+            height: 100%;
+            min-height: 320px;
+            display: flex;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.8s;
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+        }
+
+        /* Hover effect for the card container */
+        .card:hover {
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Card inner faces (front and back) */
+        .card-front,
+        .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 20px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: left;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            overflow-y: hidden;
+        }
+
+        .card-front {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            z-index: 2;
+        }
+
+        .card-back {
+            background: var(--card-back-bg);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(12px);
+            transform: rotateY(180deg);
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            font-size: 1.05rem;
+            line-height: 1.5;
+            padding: 20px;
+            text-align: left;
+            overflow-y: auto;
+        }
+
+        .card-back ul {
+            list-style-type: disc;
+            padding-left: 20px;
+            margin: 0;
+            width: 100%;
+        }
+
+        .card-back ul li {
+            margin-bottom: 8px;
+        }
+
+        .card-back ul li:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Flip state for the card */
+        .card.is-flipped {
+            transform: rotateY(180deg);
+        }
+
+        /* Icon styles */
+        .card-front .icon {
+            font-size: 3.2rem;
+            margin-bottom: 15px;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            flex-shrink: 0;
+        }
+
+        .card-front h2 {
+            font-size: 1.3rem;
+            color: var(--highlight);
+            margin-bottom: 10px;
+        }
+
+        .card-front p {
+            font-size: 0.95rem;
+            line-height: 1.5;
+            opacity: 0.9;
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Main card specific styling */
+        .main-card-wrapper {
+            grid-column: 1 / -1;
+            min-height: 300px;
+        }
+
+        .main-card-front {
+            flex-direction: row;
+            gap: 20px;
+            text-align: left;
+            align-items: center;
+        }
+
+        .main-card-front .icon {
+            font-size: 5.5rem;
+            width: 140px;
+            height: 140px;
+            margin-bottom: 0;
+        }
+
+        .main-card-front div {
+            flex-grow: 1;
+        }
+
+        .main-card-back {
+            text-align: left;
+            padding: 25px;
+        }
+
+        /* Icon colors (adapted for Cognitive Biases) */
+        .icon.bias-main {
+            color: var(--accent);
+            /* Mask/unmask icon for main card */
+        }
+
+        .icon.impact {
+            color: #FF69B4;
+            /* Hot pink for impact */
+        }
+
+        .icon.awareness {
+            color: #FFFF00;
+            /* Yellow for awareness */
+        }
+
+        .icon.real-life {
+            color: #3CB371;
+            /* Medium sea green for real life */
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+
+            .header h1 {
+                font-size: 2.2rem;
+            }
+
+            .header p {
+                font-size: 1rem;
+            }
+
+            .infographic-grid {
+                gap: 20px;
+            }
+
+            .card-wrapper {
+                min-height: 220px;
+            }
+
+            .main-card-wrapper {
+                min-height: 280px;
+            }
+
+            .main-card-front {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+
+            .main-card-front .icon {
+                font-size: 4.5rem;
+                width: 100px;
+                height: 100px;
+                margin-bottom: 10px;
+            }
+
+            .card-front .icon {
+                font-size: 2.8rem;
+                width: 70px;
+                height: 70px;
+                margin-bottom: 10px;
+            }
+
+            .card-front h2 {
+                font-size: 1.5rem;
+            }
+
+            .card-front p,
+            .card-back p {
+                font-size: 0.9rem;
+                line-height: 1.4;
+            }
+
+            .card-back ul {
+                padding-left: 15px;
+            }
+
+            .card-front,
+            .card-back {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .header p {
+                font-size: 0.9rem;
+            }
+
+            .card-front h2 {
+                font-size: 1.3rem;
+            }
+
+            .card-front p,
+            .card-back p {
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <header class="header">
+            <h1>Unmasking Your Mind: Cognitive Biases</h1>
+            <p>Discover Cognitive Biases: Systematic errors in thinking that influence your decisions and perceptions.
+            </p>
+        </header>
+
+        <div class="infographic-grid">
+            <!-- Main Definition Card -->
+            <div class="card-wrapper main-card-wrapper">
+                <div class="card" onclick="this.classList.toggle('is-flipped')">
+                    <div class="card-front main-card-front">
+                        <div class="icon bias-main">
+                            <i class="fas fa-mask"></i>
+                        </div>
+                        <div>
+                            <h2>What are Cognitive Biases?</h2>
+                            <p>Cognitive biases are mental shortcuts your brain uses to process information quickly.
+                                While often helpful, they can lead to systematic errors in judgment and decision-making,
+                                distorting your reality.</p>
+                        </div>
+                    </div>
+                    <div class="card-back main-card-back">
+                        <ul>
+                            <li><strong>Mental Shortcuts:</strong> Brain uses heuristics for rapid processing.</li>
+                            <li><strong>Systematic Errors:</strong> Lead to predictable deviations from rational
+                                judgment.</li>
+                            <li><strong>Influence Perceptions:</strong> Affect how we interpret information and
+                                situations.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 1: Their Impact -->
+            <div class="card-wrapper">
+                <div class="card" onclick="this.classList.toggle('is-flipped')">
+                    <div class="card-front">
+                        <div class="icon impact">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <h2>Their Impact on You</h2>
+                        <p>Cognitive biases profoundly influence your daily life, from what news you believe to how you
+                            spend your money, often without you even realizing it. They shape your world view and
+                            choices.</p>
+                    </div>
+                    <div class="card-back">
+                        <ul>
+                            <li><strong>Decision-Making:</strong> Lead to sub-optimal or irrational choices.</li>
+                            <li><strong>Perception & Memory:</strong> Skew how you remember events and interpret new
+                                information (e.g., Confirmation Bias).</li>
+                            <li><strong>Social Interactions:</strong> Affect first impressions and group dynamics (e.g.,
+                                In-group Bias).</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2: Why Awareness is Important -->
+            <div class="card-wrapper">
+                <div class="card" onclick="this.classList.toggle('is-flipped')">
+                    <div class="card-front">
+                        <div class="icon awareness">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                        <h2>Why Be Aware?</h2>
+                        <p>Being aware of cognitive biases empowers you to make more rational decisions, think more
+                            critically, and understand why others (and yourself!) might think or act a certain way. It's
+                            about clarity.</p>
+                    </div>
+                    <div class="card-back">
+                        <ul>
+                            <li><strong>Better Decisions:</strong> Reduces errors and improves judgment.</li>
+                            <li><strong>Critical Thinking:</strong> Fosters a more objective and nuanced understanding
+                                of information.</li>
+                            <li><strong>Reduced Manipulation:</strong> Helps recognize and resist persuasive techniques
+                                exploiting biases.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3: Seeing Them Around (Real-life examples) -->
+            <div class="card-wrapper">
+                <div class="card" onclick="this.classList.toggle('is-flipped')">
+                    <div class="card-front">
+                        <div class="icon real-life">
+                            <i class="fas fa-street-view"></i>
+                        </div>
+                        <h2>Biases All Around You</h2>
+                        <p>Once you know what to look for, you'll start spotting cognitive biases everywhere: in
+                            advertisements, political debates, social media feeds, and even in your own daily thoughts.
+                        </p>
+                    </div>
+                    <div class="card-back">
+                        <ul>
+                            <li><strong>Confirmation Bias:</strong> Only seeking information that confirms existing
+                                beliefs (e.g., social media echo chambers).</li>
+                            <li><strong>Anchoring Effect:</strong> Relying too heavily on the first piece of information
+                                offered (e.g., price negotiations).</li>
+                            <li><strong>Availability Heuristic:</strong> Overestimating the likelihood of events that
+                                are easily recalled (e.g., fear of flying after a plane crash in the news).</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Working Memory</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* General styles and variable definitions - mostly inherited from Neuroplasticity page */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #1A0040;
+            /* Slightly different primary for contrast */
+            --secondary: #2C0B60;
+            /* Slightly different secondary for contrast */
+            --accent: #FFCC00;
+            /* Yellow accent */
+            --highlight: #B13BFF;
+            /* Purple highlight */
+            --text-light: #FFFFFF;
+            --card-bg: rgba(255, 255, 255, 0.08);
+            --card-back-bg: rgba(44, 11, 96, 0.9);
+            /* Darker back for this theme */
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--text-light);
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--accent), var(--highlight));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.8;
+            max-width: 800px;
+            margin: auto;
+        }
+
+        .infographic-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            position: relative;
+            perspective: 1000px;
+            /* Needed for 3D flip effect */
+        }
+
+        /* Card specific styles */
+        .card-wrapper {
+            background: transparent;
+            border-radius: 20px;
+            height: 100%;
+            min-height: 320px;
+            display: flex;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.8s;
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+        }
+
+        /* Hover effect for the card container */
+        .card:hover {
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Card inner faces (front and back) */
+        .card-front,
+        .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 20px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: left;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            overflow-y: hidden;
+        }
+
+        .card-front {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            z-index: 2;
+        }
+
+        .card-back {
+            background: var(--card-back-bg);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(12px);
+            transform: rotateY(180deg);
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            font-size: 1.05rem;
+            line-height: 1.5;
+            padding: 20px;
+            text-align: left;
+            overflow-y: auto;
+        }
+
+        .card-back ul {
+            list-style-type: disc;
+            padding-left: 20px;
+            margin: 0;
+            width: 100%;
+        }
+
+        .card-back ul li {
+            margin-bottom: 8px;
+        }
+
+        .card-back ul li:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Flip state for the card */
+        .card.is-flipped {
+            transform: rotateY(180deg);
+        }
+
+        /* Icon styles */
+        .card-front .icon {
+            font-size: 3.2rem;
+            margin-bottom: 15px;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            flex-shrink: 0;
+        }
+
+        .card-front h2 {
+            font-size: 1.3rem;
+            color: var(--highlight);
+            margin-bottom: 10px;
+        }
+
+        .card-front p {
+            font-size: 0.95rem;
+            line-height: 1.5;
+            opacity: 0.9;
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Main card specific styling */
+        .main-card-wrapper {
+            grid-column: 1 / -1;
+            min-height: 300px;
+        }
+
+        .main-card-front {
+            flex-direction: row;
+            gap: 20px;
+            text-align: left;
+            align-items: center;
+        }
+
+        .main-card-front .icon {
+            font-size: 5.5rem;
+            width: 140px;
+            height: 140px;
+            margin-bottom: 0;
+        }
+
+        .main-card-front div {
+            flex-grow: 1;
+        }
+
+        .main-card-back {
+            text-align: left;
+            padding: 25px;
+        }
+
+        /* Icon colors (adapted for Working Memory) */
+        .icon.memory {
+            color: var(--accent);
+            /* Brain icon for main card */
+        }
+
+        .icon.capacity {
+            color: #17a2b8;
+            /* Blue for capacity/items */
+        }
+
+        .icon.practice {
+            color: #ffc107;
+            /* Orange for practice */
+        }
+
+        .icon.tasks {
+            color: #28a745;
+            /* Green for tasks/cognition */
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+
+            .header h1 {
+                font-size: 2.2rem;
+            }
+
+            .header p {
+                font-size: 1rem;
+            }
+
+            .infographic-grid {
+                gap: 20px;
+            }
+
+            .card-wrapper {
+                min-height: 220px;
+            }
+
+            .main-card-wrapper {
+                min-height: 280px;
+            }
+
+            .main-card-front {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+
+            .main-card-front .icon {
+                font-size: 4.5rem;
+                width: 100px;
+                height: 100px;
+                margin-bottom: 10px;
+            }
+
+            .card-front .icon {
+                font-size: 2.8rem;
+                width: 70px;
+                height: 70px;
+                margin-bottom: 10px;
+            }
+
+            .card-front h2 {
+                font-size: 1.5rem;
+            }
+
+            .card-front p,
+            .card-back p {
+                font-size: 0.9rem;
+                line-height: 1.4;
+            }
+
+            .card-back ul {
+                padding-left: 15px;
+            }
+
+            .card-front,
+            .card-back {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .header p {
+                font-size: 0.9rem;
+            }
+
+            .card-front h2 {
+                font-size: 1.3rem;
+            }
+
+            .card-front p,
+            .card-back p {
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <header class="header">
+            <h1>Your Cognitive Control Center: Working Memory</h1>
+            <p>Discover Working Memory: The system that holds and processes information for everyday tasks.</p>
+        </header>
+
+        <div class="infographic-grid">
+            <!-- Main Definition Card -->
+            <div class="card-wrapper main-card-wrapper">
+                <div class="card" onclick="this.classList.toggle('is-flipped')">
+                    <div class="card-front main-card-front">
+                        <div class="icon memory">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <div>
+                            <h2>What is Working Memory?</h2>
+                            <p>Working memory is your brain's temporary notepad. It holds information you need to
+                                process right now, like remembering a phone number while dialing, or solving a math
+                                problem step-by-step.</p>
+                        </div>
+                    </div>
+                    <div class="card-back main-card-back">
+                        <ul>
+                            <li><strong>Temporary Storage:</strong> Holds information active for immediate use.</li>
+                            <li><strong>Processing Hub:</strong> Not just storage, but actively manipulates information.
+                            </li>
+                            <li><strong>Crucial for Cognition:</strong> Essential for reasoning, learning, and
+                                decision-making.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 1: Holds about 7 items -->
+            <div class="card-wrapper">
+                <div class="card" onclick="this.classList.toggle('is-flipped')">
+                    <div class="card-front">
+                        <div class="icon capacity">
+                            <i class="fas fa-cubes"></i>
+                        </div>
+                        <h2>Limited Capacity</h2>
+                        <p>Your working memory can typically hold a small amount of information at a time, around 7
+                            pieces, for about 20-30 seconds, before it's forgotten or moved to long-term memory.</p>
+                    </div>
+                    <div class="card-back">
+                        <ul>
+                            <li><strong>The "Magic Number 7":</strong> On average, adults can hold about 7 (plus or
+                                minus 2) items in working memory.</li>
+                            <li><strong>Short Duration:</strong> Information is held for a brief period if not actively
+                                rehearsed.</li>
+                            <li><strong>Chunking:</strong> Grouping information (e.g., phone numbers) increases
+                                effective capacity.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2: Can be improved with practice -->
+            <div class="card-wrapper">
+                <div class="card" onclick="this.classList.toggle('is-flipped')">
+                    <div class="card-front">
+                        <div class="icon practice">
+                            <i class="fas fa-dumbbell"></i>
+                        </div>
+                        <h2>Improve with Practice</h2>
+                        <p>Just like a muscle, your working memory can be strengthened through targeted exercises and
+                            cognitive training, enhancing your ability to focus and process information.</p>
+                    </div>
+                    <div class="card-back">
+                        <ul>
+                            <li><strong>Brain Training Games:</strong> N-back tasks and dual-task exercises can enhance
+                                working memory capacity.</li>
+                            <li><strong>Mindfulness & Meditation:</strong> Can improve focus and attention, indirectly
+                                boosting working memory.</li>
+                            <li><strong>Active Recall:</strong> Regularly testing yourself on information helps to
+                                strengthen recall and retention.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3: Essential for complex cognitive tasks -->
+            <div class="card-wrapper">
+                <div class="card" onclick="this.classList.toggle('is-flipped')">
+                    <div class="card-front">
+                        <div class="icon tasks">
+                            <i class="fas fa-cogs"></i>
+                        </div>
+                        <h2>Essential for Tasks</h2>
+                        <p>Working memory is fundamental for almost all complex mental activities, from reading
+                            comprehension and problem-solving to planning and following instructions.</p>
+                    </div>
+                    <div class="card-back">
+                        <ul>
+                            <li><strong>Reading Comprehension:</strong> Holding sentences in mind to understand overall
+                                meaning.</li>
+                            <li><strong>Problem-Solving:</strong> Keeping track of steps and variables in complex
+                                challenges.</li>
+                            <li><strong>Following Instructions:</strong> Remembering multi-step directions to complete a
+                                task accurately.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

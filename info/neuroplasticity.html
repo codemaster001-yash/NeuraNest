@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Amazing Brain: A Guide to Neuroplasticity</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* General styles and variable definitions */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #090040;
+            --secondary: #471396;
+            --accent: #B13BFF;
+            --highlight: #FFCC00;
+            --text-light: #FFFFFF;
+            --card-bg: rgba(255, 255, 255, 0.08);
+            --card-back-bg: rgba(71, 19, 150, 0.9);
+            /* Slightly darker for the back */
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--text-light);
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--accent), var(--highlight));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.8;
+            max-width: 800px;
+            margin: auto;
+        }
+
+        .infographic-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            position: relative;
+            perspective: 1000px;
+            /* Needed for 3D flip effect */
+        }
+
+        /* Card specific styles */
+        .card-wrapper {
+            background: transparent;
+            /* Wrapper is transparent */
+            border-radius: 20px;
+            height: 100%;
+            /* Ensure wrapper takes full height for consistent flip */
+            min-height: 320px;
+            /* Minimum height for cards, ensuring content fits */
+            display: flex;
+            /* Allow inner card to stretch */
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            /* Keep children in 3D space */
+            transition: transform 0.8s;
+            /* Smooth flip transition */
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            /* Initial shadow */
+            cursor: pointer;
+        }
+
+        /* Hover effect for the card container */
+        .card:hover {
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            /* Enhanced shadow on hover */
+        }
+
+        /* Card inner faces (front and back) */
+        .card-front,
+        .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            /* Hide the back of the element when facing the user */
+            border-radius: 20px;
+            padding: 25px;
+            /* Slightly reduced padding to help text fit */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: left;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            /* Apply shadow to individual faces */
+            overflow-y: hidden;
+            /* Hide overflow by default */
+        }
+
+        .card-front {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            z-index: 2;
+        }
+
+        .card-back {
+            background: var(--card-back-bg);
+            /* Darker background for the back */
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(12px);
+            transform: rotateY(180deg);
+            /* Start rotated for the back face */
+            display: flex;
+            /* Ensure content is centered for the back */
+            align-items: flex-start;
+            /* Align text to start for better readability */
+            justify-content: center;
+            font-size: 1.05rem;
+            /* Slightly reduced font size for back text */
+            line-height: 1.5;
+            /* Adjusted line height */
+            padding: 20px;
+            /* More padding for text on back */
+            text-align: left;
+            /* Text alignment for examples */
+            overflow-y: auto;
+            /* Allow scrolling if content overflows */
+        }
+
+        .card-back ul {
+            list-style-type: disc;
+            padding-left: 20px;
+            /* Indent bullet points */
+            margin: 0;
+            width: 100%;
+            /* Ensure ul takes full width */
+        }
+
+        .card-back ul li {
+            margin-bottom: 8px;
+            /* Spacing between list items */
+        }
+
+        .card-back ul li:last-child {
+            margin-bottom: 0;
+        }
+
+
+        /* Flip state for the card */
+        .card.is-flipped {
+            transform: rotateY(180deg);
+        }
+
+        /* Icon styles */
+        .card-front .icon {
+            font-size: 3.2rem;
+            /* Slightly smaller base icon size */
+            margin-bottom: 15px;
+            /* Slightly reduced margin */
+            width: 80px;
+            /* Fixed width for icon container */
+            height: 80px;
+            /* Fixed height for icon container */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            flex-shrink: 0;
+            /* Prevent icon from distorting */
+        }
+
+        .card-front h2 {
+            font-size: 1.3rem;
+            /* Slightly smaller heading */
+            color: var(--highlight);
+            margin-bottom: 10px;
+            /* Reduced margin */
+        }
+
+        .card-front p {
+            font-size: 0.95rem;
+            /* Slightly smaller paragraph text */
+            line-height: 1.5;
+            opacity: 0.9;
+            flex-grow: 1;
+            /* Allow text to grow and fill space */
+            display: flex;
+            /* Use flexbox for text content */
+            align-items: center;
+            /* Center text vertically within its space */
+            justify-content: center;
+        }
+
+        /* Main card specific styling */
+        .main-card-wrapper {
+            grid-column: 1 / -1;
+            /* Span full width */
+            min-height: 300px;
+            /* Larger min-height for the main card */
+        }
+
+        .main-card-front {
+            flex-direction: row;
+            gap: 20px;
+            /* Reduced gap */
+            text-align: left;
+            align-items: center;
+            /* Align items for the main card front */
+        }
+
+        .main-card-front .icon {
+            font-size: 5.5rem;
+            /* Slightly smaller main icon */
+            width: 140px;
+            height: 140px;
+            margin-bottom: 0;
+            /* No bottom margin when in row layout */
+        }
+
+        .main-card-front div {
+            flex-grow: 1;
+            /* Allow text content to take remaining space */
+        }
+
+        .main-card-back {
+            text-align: left;
+            padding: 25px;
+            /* Adjusted padding for main card back */
+        }
+
+        /* Icon colors */
+        .icon.brain {
+            color: var(--accent);
+        }
+
+        .icon.age {
+            color: #3498db;
+        }
+
+        .icon.skills {
+            color: #e67e22;
+        }
+
+        .icon.exercise {
+            color: #2ecc71;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+                /* Reduced body padding on mobile */
+            }
+
+            .header h1 {
+                font-size: 2.2rem;
+                /* Smaller header on mobile */
+            }
+
+            .header p {
+                font-size: 1rem;
+                /* Smaller header paragraph */
+            }
+
+            .infographic-grid {
+                gap: 20px;
+                /* Smaller gap between cards on mobile */
+            }
+
+            .card-wrapper {
+                min-height: 220px;
+                /* Adjusted min-height for smaller cards */
+            }
+
+            .main-card-wrapper {
+                min-height: 280px;
+                /* Adjusted min-height for main card */
+            }
+
+            .main-card-front {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+                /* Smaller gap in column layout */
+            }
+
+            .main-card-front .icon {
+                font-size: 4.5rem;
+                /* Smaller main icon on mobile */
+                width: 100px;
+                height: 100px;
+                margin-bottom: 10px;
+                /* Added margin for column layout */
+            }
+
+            .card-front .icon {
+                font-size: 2.8rem;
+                /* Smaller icons on mobile */
+                width: 70px;
+                height: 70px;
+                margin-bottom: 10px;
+            }
+
+            .card-front h2 {
+                font-size: 1.5rem;
+                /* Smaller heading on mobile */
+            }
+
+            .card-front p,
+            .card-back p {
+                font-size: 0.9rem;
+                /* Smaller paragraph text on mobile */
+                line-height: 1.4;
+                /* Tighter line height for mobile */
+            }
+
+            .card-back ul {
+                padding-left: 15px;
+                /* Adjust bullet point indent on mobile */
+            }
+
+            .card-front,
+            .card-back {
+                padding: 20px;
+                /* Reduced padding on mobile */
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .header p {
+                font-size: 0.9rem;
+            }
+
+            .card-front h2 {
+                font-size: 1.3rem;
+            }
+
+            .card-front p,
+            .card-back p {
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <header class="header">
+            <h1>Your Super-Powered Brain!</h1>
+            <p>Discover Neuroplasticity: The amazing secret of how your brain can grow and change.</p>
+        </header>
+
+        <div class="infographic-grid">
+            <!-- Main Definition Card -->
+            <div class="card-wrapper main-card-wrapper">
+                <div class="card" onclick="this.classList.toggle('is-flipped')">
+                    <div class="card-front main-card-front">
+                        <div class="icon brain">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <div>
+                            <h2>What is Neuroplasticity?</h2>
+                            <p>Think of your brain as a big city of roads. When you learn something new, you build a new
+                                road!
+                                Neuroplasticity is your brain's power to build new roads and make existing ones
+                                stronger,
+                                helping you learn, remember, and adapt. It's like having a brain that can upgrade
+                                itself!</p>
+                        </div>
+                    </div>
+                    <div class="card-back main-card-back">
+                        <ul>
+                            <li><strong>Stroke Recovery:</strong> The brain can re-route functions from damaged areas to
+                                healthy ones, enabling patients to regain speech or movement.</li>
+                            <li><strong>Learning New Skills:</strong> Practicing an instrument or language strengthens
+                                specific neural connections, making those skills more efficient.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 1: Change at any age -->
+            <div class="card-wrapper">
+                <div class="card" onclick="this.classList.toggle('is-flipped')">
+                    <div class="card-front">
+                        <div class="icon age">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h2>Change is Always Possible</h2>
+                        <p>Your brain is not fixed like a rock. From when you're a baby to when you're a grandparent,
+                            your brain
+                            is constantly changing. It's never too late to learn something new!</p>
+                    </div>
+                    <div class="card-back">
+                        <ul>
+                            <li><strong>Adult Learning:</strong> Older adults learning new instruments or languages show
+                                new neural connections, proving continuous learning capacity.</li>
+                            <li><strong>Adapting to New Environments:</strong> People moving to new cultures quickly
+                                adapt their social understanding and problem-solving skills.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2: Learning new skills -->
+            <div class="card-wrapper">
+                <div class="card" onclick="this.classList.toggle('is-flipped')">
+                    <div class="card-front">
+                        <div class="icon skills">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                        <h2>Learning Strengthens Pathways</h2>
+                        <p>Every time you practice a new skill, like riding a bike or learning a new language, the
+                            "roads" in
+                            your brain for that skill get wider and stronger. Practice makes perfect... and a stronger
+                            brain!
+                        </p>
+                    </div>
+                    <div class="card-back">
+                        <ul>
+                            <li><strong>Musicians' Brains:</strong> Professional musicians show increased density and
+                                activity in motor and auditory cortices due to practice.</li>
+                            <li><strong>Learning to Juggle:</strong> Studies show increased gray matter in areas related
+                                to motor control after just a few weeks of juggling practice.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3: Mental exercise -->
+            <div class="card-wrapper">
+                <div class="card" onclick="this.classList.toggle('is-flipped')">
+                    <div class="card-front">
+                        <div class="icon exercise">
+                            <i class="fas fa-dumbbell"></i>
+                        </div>
+                        <h2>Exercise Your Mind</h2>
+                        <p>Just like your body, your brain needs exercise! Solving puzzles, reading books, or playing
+                            thinking
+                            games are great ways to keep your brain's roads open and ready for new adventures.</p>
+                    </div>
+                    <div class="card-back">
+                        <ul>
+                            <li><strong>Cognitive Reserve:</strong> Engaging in mentally stimulating activities like
+                                coding or chess improves cognitive function and reduces decline risk.</li>
+                            <li><strong>Navigation Skills:</strong> Taxi drivers develop larger hippocampi, the brain
+                                region linked to spatial memory, through extensive navigation.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
