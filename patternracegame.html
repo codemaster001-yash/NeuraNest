@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pattern Race - NeuraNest</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #090040, #471396);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+        }
+
+        .header {
+            padding: 25px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(0, 0, 0, 0.2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            font-size: 36px;
+            color: #B13BFF;
+        }
+
+        .logo-text {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #B13BFF, #FFCC00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .game-title {
+            text-align: center;
+            font-size: 32px;
+            margin-top: 10px;
+            color: #FFCC00;
+            text-shadow: 0 0 10px rgba(255, 204, 0, 0.3);
+        }
+
+        .game-subtitle {
+            text-align: center;
+            font-size: 18px;
+            opacity: 0.8;
+            margin: 10px 0 25px;
+        }
+
+        .game-info {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.15);
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .info-box {
+            text-align: center;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            min-width: 150px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .info-label {
+            font-size: 16px;
+            opacity: 0.7;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #FFCC00;
+        }
+
+        .game-area {
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .pattern-display {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .pattern-item {
+            width: 80px;
+            height: 80px;
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.3s, opacity 0.3s;
+        }
+
+        .pattern-item.hidden {
+            opacity: 0.3;
+            transform: scale(0.8);
+        }
+
+        .pattern-shape {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #B13BFF;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 30px;
+            transition: all 0.3s;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin: 30px 0;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .option-item {
+            aspect-ratio: 1/1;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .option-item:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .option-item:hover:before {
+            opacity: 1;
+        }
+
+        .option-item.selected {
+            transform: scale(0.95);
+            box-shadow: 0 0 20px rgba(255, 204, 0, 0.7);
+        }
+
+        .option-shape {
+            width: 80%;
+            height: 80%;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 15px 35px;
+            border: none;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-5px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn.start {
+            background: linear-gradient(90deg, #00C853, #009624);
+        }
+
+        .btn.reset {
+            background: linear-gradient(90deg, #B13BFF, #7A1FC9);
+        }
+
+        .btn.quit {
+            background: linear-gradient(90deg, #FF5252, #D50000);
+        }
+
+        .timer-container {
+            width: 100%;
+            max-width: 500px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .timer-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #FFCC00, #FF9800);
+            border-radius: 10px;
+            width: 100%;
+            transition: width 0.5s linear;
+        }
+
+        .game-message {
+            margin: 20px 0;
+            padding: 15px 30px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 50px;
+            text-align: center;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 500px;
+            font-size: 22px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .instructions {
+            padding: 25px;
+            background: rgba(0, 0, 0, 0.15);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .instructions h3 {
+            color: #B13BFF;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 24px;
+        }
+
+        .instructions-content {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .instruction-card {
+            flex: 1;
+            min-width: 200px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        .instruction-card h4 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            color: #FFCC00;
+        }
+
+        .instruction-card ul {
+            padding-left: 20px;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        .instruction-card li {
+            margin-bottom: 10px;
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .tada {
+            animation: tada 1s;
+        }
+
+        @keyframes tada {
+            0% {
+                transform: scale(1);
+            }
+
+            10%,
+            20% {
+                transform: scale(0.9) rotate(-3deg);
+            }
+
+            30%,
+            50%,
+            70%,
+            90% {
+                transform: scale(1.1) rotate(3deg);
+            }
+
+            40%,
+            60%,
+            80% {
+                transform: scale(1.1) rotate(-3deg);
+            }
+
+            100% {
+                transform: scale(1) rotate(0);
+            }
+        }
+
+        .shake {
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            20%,
+            60% {
+                transform: translateX(-8px);
+            }
+
+            40%,
+            80% {
+                transform: translateX(8px);
+            }
+        }
+
+        .bounce {
+            animation: bounce 0.5s;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .info-box {
+                min-width: 120px;
+                padding: 12px 15px;
+            }
+
+            .info-value {
+                font-size: 26px;
+            }
+
+            .pattern-item {
+                width: 60px;
+                height: 60px;
+            }
+
+            .pattern-shape {
+                width: 45px;
+                height: 45px;
+                font-size: 20px;
+            }
+
+            .options-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+
+            .btn {
+                padding: 12px 25px;
+                font-size: 16px;
+            }
+
+            .game-title {
+                font-size: 26px;
+            }
+        }
+
+        .color-1 {
+            background-color: #FF5252;
+        }
+
+        .color-2 {
+            background-color: #4CAF50;
+        }
+
+        .color-3 {
+            background-color: #2196F3;
+        }
+
+        .color-4 {
+            background-color: #FF9800;
+        }
+
+        .color-5 {
+            background-color: #9C27B0;
+        }
+
+        .color-6 {
+            background-color: #00BCD4;
+        }
+
+        .shape-circle {
+            border-radius: 50%;
+        }
+
+        .shape-square {
+            border-radius: 10px;
+        }
+
+        .shape-triangle {
+            background: none !important;
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+        }
+
+        .shape-diamond {
+            background: none !important;
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon"><i class="fas fa-brain"></i></div>
+                <div class="logo-text">NeuraNest</div>
+            </div>
+            <div class="game-info">
+                <div class="info-box">
+                    <div class="info-label"><i class="fas fa-star"></i> SCORE</div>
+                    <div class="info-value" id="score">0</div>
+                </div>
+                <div class="info-box">
+                    <div class="info-label"><i class="fas fa-layer-group"></i> LEVEL</div>
+                    <div class="info-value" id="level">1</div>
+                </div>
+                <div class="info-box">
+                    <div class="info-label"><i class="fas fa-bolt"></i> TIME</div>
+                    <div class="info-value" id="time">30</div>
+                </div>
+            </div>
+        </div>
+
+        <h1 class="game-title">Pattern Race</h1>
+        <p class="game-subtitle">Match the pattern before time runs out!</p>
+
+        <div class="game-area">
+            <div class="pattern-display" id="pattern-display">
+                <!-- Pattern will be generated here -->
+            </div>
+
+            <div class="timer-container">
+                <div class="timer-bar" id="timer-bar"></div>
+            </div>
+
+            <div class="game-message" id="message">
+                Click START to begin the game
+            </div>
+
+            <div class="options-grid" id="options-grid">
+                <!-- Options will be generated here -->
+            </div>
+
+            <div class="controls">
+                <button class="btn start" id="start-btn">
+                    <i class="fas fa-play"></i> START GAME
+                </button>
+                <button class="btn reset" id="reset-btn">
+                    <i class="fas fa-redo"></i> RESET GAME
+                </button>
+                <button class="btn quit" id="quit-btn">
+                    <i class="fas fa-sign-out-alt"></i> QUIT
+                </button>
+            </div>
+        </div>
+
+        <div class="instructions">
+            <h3>How to Play Pattern Race</h3>
+            <div class="instructions-content">
+                <div class="instruction-card">
+                    <h4><i class="fas fa-lightbulb"></i> Objective</h4>
+                    <ul>
+                        <li>Memorize the pattern of colored shapes</li>
+                        <li>Select the correct shapes in the same order</li>
+                        <li>Complete patterns before time runs out</li>
+                        <li>Score as many points as possible!</li>
+                    </ul>
+                </div>
+                <div class="instruction-card">
+                    <h4><i class="fas fa-trophy"></i> Scoring</h4>
+                    <ul>
+                        <li>+100 points for each correct pattern</li>
+                        <li>+10 bonus points for each second remaining</li>
+                        <li>+50 bonus points for each consecutive pattern</li>
+                        <li>Combo multiplier after 5 correct patterns</li>
+                    </ul>
+                </div>
+                <div class="instruction-card">
+                    <h4><i class="fas fa-chart-line"></i> Progression</h4>
+                    <ul>
+                        <li>Pattern length increases every level</li>
+                        <li>Time decreases as levels increase</li>
+                        <li>More shape/color combinations added</li>
+                        <li>Speed increases after level 5</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Game state variables
+            let score = 0;
+            let level = 1;
+            let timeLeft = 30;
+            let timer;
+            let gameActive = false;
+            let currentPattern = [];
+            let userPattern = [];
+            let consecutiveCorrect = 0;
+            let comboMultiplier = 1;
+
+            // Game settings
+            const colors = ['color-1', 'color-2', 'color-3', 'color-4', 'color-5', 'color-6'];
+            const shapes = ['shape-circle', 'shape-square', 'shape-triangle', 'shape-diamond'];
+            const shapeIcons = {
+                'shape-circle': 'fas fa-circle',
+                'shape-square': 'fas fa-square',
+                'shape-triangle': 'fas fa-play',
+                'shape-diamond': 'fas fa-gem'
+            };
+
+            // DOM elements
+            const scoreElement = document.getElementById('score');
+            const levelElement = document.getElementById('level');
+            const timeElement = document.getElementById('time');
+            const messageElement = document.getElementById('message');
+            const timerBar = document.getElementById('timer-bar');
+            const startBtn = document.getElementById('start-btn');
+            const resetBtn = document.getElementById('reset-btn');
+            const quitBtn = document.getElementById('quit-btn');
+            const patternDisplay = document.getElementById('pattern-display');
+            const optionsGrid = document.getElementById('options-grid');
+
+            // Initialize the game
+            function initGame() {
+                generateOptions();
+                updateUI();
+                messageElement.textContent = "Click START to begin the game";
+                messageElement.classList.remove('tada', 'shake');
+            }
+
+            // Start the game
+            function startGame() {
+                if (gameActive) return;
+
+                resetGameState();
+                gameActive = true;
+
+                messageElement.textContent = "Get ready...";
+                messageElement.classList.add('pulse');
+
+                setTimeout(() => {
+                    messageElement.classList.remove('pulse');
+                    startRound();
+                }, 2000);
+            }
+
+            // Reset the game state
+            function resetGameState() {
+                score = 0;
+                level = 1;
+                consecutiveCorrect = 0;
+                comboMultiplier = 1;
+                timeLeft = 30;
+                clearInterval(timer);
+                updateUI();
+            }
+
+            // Start a new round
+            function startRound() {
+                // Clear previous pattern
+                currentPattern = [];
+                userPattern = [];
+                patternDisplay.innerHTML = '';
+
+                // Calculate pattern length based on level
+                const patternLength = Math.min(3 + Math.floor(level / 2), 8);
+
+                // Generate new pattern
+                for (let i = 0; i < patternLength; i++) {
+                    const color = colors[Math.floor(Math.random() * colors.length)];
+                    const shape = shapes[Math.floor(Math.random() * shapes.length)];
+                    currentPattern.push({ color, shape });
+
+                    // Create pattern display item
+                    const patternItem = document.createElement('div');
+                    patternItem.className = `pattern-item ${color}`;
+
+                    const patternShape = document.createElement('div');
+                    patternShape.className = `pattern-shape ${shape}`;
+                    patternShape.innerHTML = `<i class="${shapeIcons[shape]}"></i>`;
+
+                    patternItem.appendChild(patternShape);
+                    patternDisplay.appendChild(patternItem);
+                }
+
+                // Show pattern to player
+                messageElement.textContent = "Memorize the pattern...";
+
+                // Hide pattern after delay
+                setTimeout(() => {
+                    Array.from(patternDisplay.children).forEach(item => {
+                        item.classList.add('hidden');
+                    });
+                    messageElement.textContent = "Your turn! Recreate the pattern";
+                    startTimer();
+                }, 3000);
+            }
+
+            // Generate option grid
+            function generateOptions() {
+                optionsGrid.innerHTML = '';
+
+                // Create 12 options (some duplicates to increase difficulty)
+                const options = [];
+                for (let i = 0; i < 12; i++) {
+                    const color = colors[Math.floor(Math.random() * colors.length)];
+                    const shape = shapes[Math.floor(Math.random() * shapes.length)];
+                    options.push({ color, shape });
+                }
+
+                // Add options to grid
+                options.forEach((option, index) => {
+                    const optionItem = document.createElement('div');
+                    optionItem.className = 'option-item';
+                    optionItem.dataset.index = index;
+
+                    const optionShape = document.createElement('div');
+                    optionShape.className = `option-shape ${option.color} ${option.shape}`;
+                    optionShape.innerHTML = `<i class="${shapeIcons[option.shape]}"></i>`;
+
+                    optionItem.appendChild(optionShape);
+                    optionItem.addEventListener('click', () => selectOption(optionItem, option));
+                    optionsGrid.appendChild(optionItem);
+                });
+            }
+
+            // Handle option selection
+            function selectOption(optionElement, option) {
+                if (!gameActive || userPattern.length >= currentPattern.length) return;
+
+                // Add selection effect
+                optionElement.classList.add('selected');
+                setTimeout(() => optionElement.classList.remove('selected'), 300);
+
+                // Add to user pattern
+                userPattern.push(option);
+
+                // Check if correct
+                const currentIndex = userPattern.length - 1;
+                if (option.color === currentPattern[currentIndex].color &&
+                    option.shape === currentPattern[currentIndex].shape) {
+
+                    // Show pattern item as revealed
+                    patternDisplay.children[currentIndex].classList.remove('hidden');
+                    patternDisplay.children[currentIndex].classList.add('bounce');
+                    setTimeout(() => {
+                        patternDisplay.children[currentIndex].classList.remove('bounce');
+                    }, 500);
+
+                    // Check if pattern complete
+                    if (userPattern.length === currentPattern.length) {
+                        handlePatternComplete();
+                    }
+                } else {
+                    // Incorrect selection
+                    messageElement.textContent = "Incorrect! Try again.";
+                    messageElement.classList.add('shake');
+                    setTimeout(() => messageElement.classList.remove('shake'), 500);
+
+                    // Penalty - lose 3 seconds
+                    timeLeft = Math.max(3, timeLeft - 3);
+
+                    // Reset user pattern
+                    userPattern = [];
+
+                    // Hide pattern again
+                    Array.from(patternDisplay.children).forEach(item => {
+                        if (!item.classList.contains('hidden')) {
+                            item.classList.add('hidden');
+                        }
+                    });
+                }
+            }
+
+            // Handle completed pattern
+            function handlePatternComplete() {
+                // Calculate points
+                const basePoints = 100;
+                const timeBonus = Math.floor(timeLeft * 10);
+                const streakBonus = consecutiveCorrect * 50;
+                const points = (basePoints + timeBonus + streakBonus) * comboMultiplier;
+
+                score += points;
+                consecutiveCorrect++;
+
+                // Increase combo multiplier every 5 consecutive
+                if (consecutiveCorrect % 5 === 0) {
+                    comboMultiplier++;
+                    messageElement.textContent = `COMBO x${comboMultiplier}!`;
+                    messageElement.classList.add('tada');
+                } else {
+                    messageElement.textContent = `Correct! +${points} points`;
+                }
+
+                // Level up
+                level++;
+
+                // Update UI
+                updateUI();
+
+                // Start next round after delay
+                setTimeout(() => {
+                    messageElement.classList.remove('tada');
+                    startRound();
+                }, 2000);
+            }
+
+            // Start the timer
+            function startTimer() {
+                clearInterval(timer);
+                timeLeft = Math.max(15, 35 - level * 2); // Time decreases as level increases
+                timerBar.style.width = '100%';
+                timeElement.textContent = timeLeft;
+
+                timer = setInterval(() => {
+                    timeLeft--;
+                    timeElement.textContent = timeLeft;
+                    timerBar.style.width = `${(timeLeft / 30) * 100}%`;
+
+                    // Change color when time is low
+                    if (timeLeft < 8) {
+                        timerBar.style.background = 'linear-gradient(90deg, #FF5252, #D50000)';
+                    } else if (timeLeft < 15) {
+                        timerBar.style.background = 'linear-gradient(90deg, #FF9800, #F57C00)';
+                    }
+
+                    if (timeLeft <= 0) {
+                        clearInterval(timer);
+                        endGame();
+                    }
+                }, 1000);
+            }
+
+            // End the game
+            function endGame() {
+                gameActive = false;
+                clearInterval(timer);
+
+                messageElement.textContent = `Game Over! Final Score: ${score}`;
+                messageElement.classList.add('pulse');
+            }
+
+            // Reset the game
+            function resetGame() {
+                gameActive = false;
+                clearInterval(timer);
+                resetGameState();
+                initGame();
+            }
+
+            // Update UI elements
+            function updateUI() {
+                scoreElement.textContent = score;
+                levelElement.textContent = level;
+            }
+
+            // Initialize the game
+            initGame();
+
+            // Event listeners
+            startBtn.addEventListener('click', startGame);
+            resetBtn.addEventListener('click', resetGame);
+            quitBtn.addEventListener('click', () => {
+                if (confirm("Are you sure you want to quit?")) {
+                    resetGame();
+                }
+            });
+
+            // Add a keyboard shortcut for starting the game
+            document.addEventListener('keydown', (e) => {
+                if (e.code === 'Space' && !gameActive) {
+                    startGame();
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

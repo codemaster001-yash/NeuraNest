@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuraNest - Memory Grid Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #090040, #471396);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: white;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .header {
+            padding: 20px;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .logo-icon {
+            font-size: 28px;
+            color: #B13BFF;
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #B13BFF, #FFCC00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .title {
+            font-size: 22px;
+            margin: 10px 0;
+            color: #FFCC00;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            opacity: 0.8;
+            margin-bottom: 15px;
+        }
+
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 20px;
+            background: rgba(0, 0, 0, 0.15);
+        }
+
+        .info-box {
+            text-align: center;
+            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            min-width: 100px;
+        }
+
+        .info-label {
+            font-size: 14px;
+            opacity: 0.7;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #FFCC00;
+        }
+
+        .game-area {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .cell {
+            aspect-ratio: 1/1;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cell:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .cell:hover:before {
+            opacity: 1;
+        }
+
+        .cell.active {
+            background: #FFCC00;
+            transform: scale(0.95);
+            box-shadow: 0 0 20px rgba(255, 204, 0, 0.5);
+        }
+
+        .cell.correct {
+            background: #00C853;
+        }
+
+        .cell.incorrect {
+            background: #FF1744;
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            20%,
+            60% {
+                transform: translateX(-5px);
+            }
+
+            40%,
+            80% {
+                transform: translateX(5px);
+            }
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: linear-gradient(90deg, #B13BFF, #7A1FC9);
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(177, 59, 255, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn.start {
+            background: linear-gradient(90deg, #FFCC00, #FF9800);
+        }
+
+        .btn.reset {
+            background: linear-gradient(90deg, #00B8D4, #0091EA);
+        }
+
+        .game-message {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            text-align: center;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        .level-indicator {
+            display: flex;
+            gap: 5px;
+            margin-top: 15px;
+        }
+
+        .level-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .level-dot.active {
+            background: #FFCC00;
+            box-shadow: 0 0 10px #FFCC00;
+        }
+
+        .instructions {
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.15);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .instructions h3 {
+            color: #B13BFF;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .instructions ul {
+            padding-left: 20px;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        .instructions li {
+            margin-bottom: 8px;
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .tada {
+            animation: tada 1s;
+        }
+
+        @keyframes tada {
+            0% {
+                transform: scale(1);
+            }
+
+            10%,
+            20% {
+                transform: scale(0.9) rotate(-3deg);
+            }
+
+            30%,
+            50%,
+            70%,
+            90% {
+                transform: scale(1.1) rotate(3deg);
+            }
+
+            40%,
+            60%,
+            80% {
+                transform: scale(1.1) rotate(-3deg);
+            }
+
+            100% {
+                transform: scale(1) rotate(0);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .game-info {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 250px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">🧠</div>
+                <div class="logo-text">NeuraNest</div>
+            </div>
+            <h1 class="title">Memory Grid Challenge</h1>
+            <p class="subtitle">Train your working memory - Remember the pattern!</p>
+        </div>
+
+        <div class="game-info">
+            <div class="info-box">
+                <div class="info-label">SCORE</div>
+                <div class="info-value" id="score">0</div>
+            </div>
+            <div class="info-box">
+                <div class="info-label">LEVEL</div>
+                <div class="info-value" id="level">1</div>
+            </div>
+            <div class="info-box">
+                <div class="info-label">SEQUENCE</div>
+                <div class="info-value" id="sequence">3</div>
+            </div>
+        </div>
+
+        <div class="game-area">
+            <div class="game-board" id="game-board">
+                <!-- Cells will be generated by JavaScript -->
+            </div>
+
+            <div class="level-indicator" id="level-indicator">
+                <!-- Level dots will be generated by JavaScript -->
+            </div>
+
+            <div class="game-message" id="message">
+                Click START to begin the game
+            </div>
+
+            <div class="controls">
+                <button class="btn start" id="start-btn">
+                    <span>▶</span> START GAME
+                </button>
+                <button class="btn reset" id="reset-btn">
+                    <span>↻</span> RESET GAME
+                </button>
+            </div>
+        </div>
+
+        <div class="instructions">
+            <h3>How to Play</h3>
+            <ul>
+                <li>Memorize the sequence of highlighted cells</li>
+                <li>Click the cells in the same order when it's your turn</li>
+                <li>Each correct sequence increases your score</li>
+                <li>Every 3 levels, the sequence gets longer</li>
+                <li>Make 3 mistakes and the game ends!</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Game state variables
+            let score = 0;
+            let level = 1;
+            let sequenceLength = 3;
+            let sequence = [];
+            let userSequence = [];
+            let isShowingSequence = false;
+            let isUserTurn = false;
+            let gameActive = false;
+            let mistakes = 0;
+            const maxMistakes = 3;
+
+            // DOM elements
+            const gameBoard = document.getElementById('game-board');
+            const scoreElement = document.getElementById('score');
+            const levelElement = document.getElementById('level');
+            const sequenceElement = document.getElementById('sequence');
+            const messageElement = document.getElementById('message');
+            const startBtn = document.getElementById('start-btn');
+            const resetBtn = document.getElementById('reset-btn');
+            const levelIndicator = document.getElementById('level-indicator');
+
+            // Initialize the game board
+            function initGameBoard() {
+                gameBoard.innerHTML = '';
+                const gridSize = 3;
+
+                for (let i = 0; i < gridSize * gridSize; i++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.dataset.index = i;
+
+                    cell.addEventListener('click', () => {
+                        if (gameActive && isUserTurn && !isShowingSequence) {
+                            handleCellClick(i);
+                        }
+                    });
+
+                    gameBoard.appendChild(cell);
+                }
+            }
+
+            // Initialize level indicator
+            function initLevelIndicator() {
+                levelIndicator.innerHTML = '';
+
+                for (let i = 0; i < maxMistakes; i++) {
+                    const dot = document.createElement('div');
+                    dot.className = 'level-dot';
+                    if (i < maxMistakes - mistakes) {
+                        dot.classList.add('active');
+                    }
+                    levelIndicator.appendChild(dot);
+                }
+            }
+
+            // Start the game
+            function startGame() {
+                if (gameActive) return;
+
+                score = 0;
+                level = 1;
+                mistakes = 0;
+                sequenceLength = 3;
+                gameActive = true;
+
+                updateUI();
+                initLevelIndicator();
+                messageElement.textContent = 'Get ready...';
+                messageElement.classList.add('pulse');
+
+                setTimeout(() => {
+                    messageElement.classList.remove('pulse');
+                    generateSequence();
+                    showSequence();
+                }, 1500);
+            }
+
+            // Reset the game
+            function resetGame() {
+                gameActive = false;
+                isShowingSequence = false;
+                isUserTurn = false;
+
+                // Clear active classes
+                document.querySelectorAll('.cell').forEach(cell => {
+                    cell.classList.remove('active', 'correct', 'incorrect');
+                });
+
+                messageElement.textContent = 'Click START to begin the game';
+                messageElement.classList.remove('pulse', 'tada');
+
+                initLevelIndicator();
+            }
+
+            // Generate a new sequence
+            function generateSequence() {
+                sequence = [];
+                const cells = document.querySelectorAll('.cell');
+
+                while (sequence.length < sequenceLength) {
+                    const randomIndex = Math.floor(Math.random() * cells.length);
+                    if (!sequence.includes(randomIndex)) {
+                        sequence.push(randomIndex);
+                    }
+                }
+
+                sequenceElement.textContent = sequenceLength;
+            }
+
+            // Show the sequence to the player
+            function showSequence() {
+                isShowingSequence = true;
+                isUserTurn = false;
+                messageElement.textContent = 'Memorize the sequence...';
+
+                let i = 0;
+                const interval = setInterval(() => {
+                    if (i >= sequence.length) {
+                        clearInterval(interval);
+                        setTimeout(() => {
+                            isShowingSequence = false;
+                            isUserTurn = true;
+                            userSequence = [];
+                            messageElement.textContent = 'Your turn! Repeat the sequence';
+                        }, 500);
+                        return;
+                    }
+
+                    const cellIndex = sequence[i];
+                    const cell = document.querySelector(`.cell[data-index="${cellIndex}"]`);
+
+                    // Highlight the cell
+                    cell.classList.add('active');
+
+                    // Remove highlight after delay
+                    setTimeout(() => {
+                        cell.classList.remove('active');
+                    }, 700);
+
+                    i++;
+                }, 1200);
+            }
+
+            // Handle cell click
+            function handleCellClick(index) {
+                if (!isUserTurn || isShowingSequence) return;
+
+                const cell = document.querySelector(`.cell[data-index="${index}"]`);
+                userSequence.push(index);
+
+                // Check if correct
+                if (index === sequence[userSequence.length - 1]) {
+                    cell.classList.add('correct');
+                    setTimeout(() => {
+                        cell.classList.remove('correct');
+                    }, 500);
+
+                    // Check if sequence complete
+                    if (userSequence.length === sequence.length) {
+                        // Sequence correct
+                        score += sequenceLength * 10;
+                        level++;
+
+                        // Increase sequence length every 3 levels
+                        if (level % 3 === 0 && sequenceLength < 7) {
+                            sequenceLength++;
+                        }
+
+                        updateUI();
+                        messageElement.textContent = 'Correct! Well done!';
+                        messageElement.classList.add('tada');
+
+                        setTimeout(() => {
+                            messageElement.classList.remove('tada');
+                            generateSequence();
+                            showSequence();
+                        }, 1500);
+                    }
+                } else {
+                    // Incorrect
+                    cell.classList.add('incorrect');
+                    setTimeout(() => {
+                        cell.classList.remove('incorrect');
+                    }, 500);
+
+                    mistakes++;
+                    initLevelIndicator();
+                    messageElement.textContent = 'Incorrect! Try again.';
+
+                    if (mistakes >= maxMistakes) {
+                        // Game over
+                        setTimeout(() => {
+                            gameOver();
+                        }, 1000);
+                    } else {
+                        // Reset for another try
+                        setTimeout(() => {
+                            userSequence = [];
+                            messageElement.textContent = 'Try again! Repeat the sequence';
+                        }, 1000);
+                    }
+                }
+            }
+
+            // Game over
+            function gameOver() {
+                gameActive = false;
+                isUserTurn = false;
+
+                messageElement.textContent = `Game Over! Final Score: ${score}`;
+                messageElement.classList.add('pulse');
+            }
+
+            // Update UI elements
+            function updateUI() {
+                scoreElement.textContent = score;
+                levelElement.textContent = level;
+                sequenceElement.textContent = sequenceLength;
+            }
+
+            // Initialize the game
+            initGameBoard();
+            initLevelIndicator();
+
+            // Event listeners
+            startBtn.addEventListener('click', startGame);
+            resetBtn.addEventListener('click', resetGame);
+
+            // Add a keyboard shortcut for starting the game
+            document.addEventListener('keydown', (e) => {
+                if (e.code === 'Space' && !gameActive) {
+                    startGame();
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

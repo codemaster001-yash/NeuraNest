@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuraNest - Cognitive Gym</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #090040;
+            --secondary: #471396;
+            --accent: #B13BFF;
+            --highlight: #FFCC00;
+            --light-bg: #f0f2ff;
+            --card-bg: rgba(255, 255, 255, 0.08);
+            --text-light: #FFFFFF;
+            --text-dark: #333333;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            min-height: 100vh;
+            color: var(--text-light);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 10% 20%, rgba(177, 59, 255, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(255, 204, 0, 0.1) 0%, transparent 20%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        #app {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header Styles */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            font-size: 36px;
+            color: var(--accent);
+            animation: pulse 2s infinite;
+        }
+
+        .logo-text {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--accent), var(--highlight));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-light);
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: rgba(177, 59, 255, 0.2);
+            transform: translateY(-3px);
+        }
+
+        .nav-btn.active {
+            background: var(--accent);
+            box-shadow: 0 0 15px rgba(177, 59, 255, 0.5);
+        }
+
+        /* Screen Container */
+        .screen-container {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            position: relative;
+            display: none;
+        }
+
+        .screen-container.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .screen-content {
+            padding: 30px;
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        /* Welcome Screen */
+        .welcome-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .welcome-title {
+            font-size: 36px;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, var(--accent), var(--highlight));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .welcome-subtitle {
+            font-size: 20px;
+            opacity: 0.8;
+            margin-bottom: 40px;
+            max-width: 600px;
+            line-height: 1.6;
+        }
+
+        .input-group {
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 30px;
+        }
+
+        .name-input {
+            width: 100%;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--accent);
+            border-radius: 12px;
+            color: var(--text-light);
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .name-input:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(177, 59, 255, 0.3);
+        }
+
+        .start-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(90deg, var(--accent), var(--secondary));
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .start-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(177, 59, 255, 0.3);
+        }
+
+        /* Dashboard Screen */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .dashboard-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            background: rgba(177, 59, 255, 0.2);
+        }
+
+        .card-title {
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        .progress-container {
+            margin: 15px 0;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--highlight));
+            border-radius: 4px;
+            width: 75%;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Games Screen */
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .game-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(177, 59, 255, 0.2);
+        }
+
+        .game-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(177, 59, 255, 0.2);
+        }
+
+        .game-icon {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            margin-bottom: 20px;
+            position: relative;
+            transition: all 0.4s ease;
+            z-index: 2;
+        }
+
+        .game-card:hover .game-icon {
+            transform: scale(1.1);
+            filter: drop-shadow(0 0 20px currentColor);
+        }
+
+        .game-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .game-desc {
+            font-size: 16px;
+            opacity: 0.8;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .play-btn {
+            display: inline-block;
+            padding: 10px 25px;
+            background: linear-gradient(90deg, var(--accent), var(--highlight));
+            color: var(--primary);
+            font-weight: 600;
+            border-radius: 50px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 2;
+        }
+
+        .play-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(177, 59, 255, 0.4);
+        }
+
+        /* Analytics Screen */
+        .chart-container {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 25px;
+            margin-top: 30px;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .chart-title {
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        .chart-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chart-btn {
+            padding: 8px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .chart-btn.active {
+            background: var(--accent);
+        }
+
+        .chart-placeholder {
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            margin-top: 20px;
+            font-size: 18px;
+            opacity: 0.7;
+        }
+
+        /* Learn Screen */
+        .learn-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .learn-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .learn-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .learn-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .learn-content {
+            font-size: 16px;
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+
+        .learn-content ul {
+            padding-left: 20px;
+            margin: 15px 0;
+        }
+
+        .learn-content li {
+            margin-bottom: 10px;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 30px 0;
+            margin-top: 40px;
+            font-size: 16px;
+            opacity: 0.7;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .nav-buttons {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .screen-content {
+                padding: 20px;
+            }
+
+            .dashboard-grid,
+            .games-grid,
+            .learn-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .welcome-title {
+                font-size: 28px;
+            }
+
+            .welcome-subtitle {
+                font-size: 18px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .card-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .game-icon {
+                width: 80px;
+                height: 80px;
+                font-size: 30px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <!-- Header with Navigation -->
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon"><i class="fas fa-brain"></i></div>
+                <div class="logo-text">NeuraNest</div>
+            </div>
+            <div class="nav-buttons">
+                <div class="nav-btn" data-screen="dashboard"><i class="fas fa-home"></i></div>
+                <div class="nav-btn" data-screen="games"><i class="fas fa-gamepad"></i></div>
+                <div class="nav-btn" data-screen="analytics"><i class="fas fa-chart-line"></i></div>
+                <div class="nav-btn" data-screen="learn"><i class="fas fa-book"></i></div>
+            </div>
+        </div>
+
+        <!-- Welcome Screen -->
+        <div class="screen-container active" id="welcome-screen">
+            <div class="screen-content welcome-screen">
+                <h1 class="welcome-title">Welcome to Your Cognitive Gym</h1>
+                <p class="welcome-subtitle">Train your brain with fun, adaptive games designed to boost memory, logic,
+                    attention, and visual skills for all ages.</p>
+
+                <div class="input-group">
+                    <input type="text" class="name-input" placeholder="Enter your name">
+                    <button class="start-btn">Start Training</button>
+                </div>
+                <!--GAME CARDS-->
+                <!-- <div class="games-grid">
+                    <div class="game-card">
+                        <div class="game-icon" style="background: rgba(255, 82, 82, 0.15); color: #FF5252;">
+                            <i class="fas fa-th-large"></i>
+                        </div>
+                        <h3 class="game-title">Memory Grid</h3>
+                        <p class="game-desc">Remember patterns of highlighted cells to strengthen your working memory.</p>
+                    </div>
+                    
+                    <div class="game-card">
+                        <div class="game-icon" style="background: rgba(33, 150, 243, 0.15); color: #2196F3;">
+                            <i class="fas fa-puzzle-piece"></i>
+                        </div>
+                        <h3 class="game-title">Logic Flips</h3>
+                        <p class="game-desc">Solve logic gate puzzles by flipping inputs to match the target output.</p>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+
+        <!-- Dashboard Screen -->
+        <div class="screen-container" id="dashboard-screen">
+            <div class="screen-content">
+                <h2 style="font-size: 28px; margin-bottom: 20px;">Cognitive Dashboard</h2>
+                <p style="opacity: 0.8; margin-bottom: 30px;">Track your progress and continue your brain training
+                    journey</p>
+
+                <div class="dashboard-grid">
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <div class="card-icon" style="background: rgba(177, 59, 255, 0.2);">
+                                <i class="fas fa-brain" style="color: #B13BFF;"></i>
+                            </div>
+                            <h3 class="card-title">Memory</h3>
+                        </div>
+                        <div class="progress-container">
+                            <div class="progress-bar">
+                                <div class="progress-fill"></div>
+                            </div>
+                            <div class="progress-info">
+                                <span>Current Level: 5</span>
+                                <span>75%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <div class="card-icon" style="background: rgba(255, 204, 0, 0.2);">
+                                <i class="fas fa-calculator" style="color: #FFCC00;"></i>
+                            </div>
+                            <h3 class="card-title">Logic</h3>
+                        </div>
+                        <div class="progress-container">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 60%;"></div>
+                            </div>
+                            <div class="progress-info">
+                                <span>Current Level: 4</span>
+                                <span>60%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <div class="card-icon" style="background: rgba(76, 175, 80, 0.2);">
+                                <i class="fas fa-bullseye" style="color: #4CAF50;"></i>
+                            </div>
+                            <h3 class="card-title">Attention</h3>
+                        </div>
+                        <div class="progress-container">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 85%;"></div>
+                            </div>
+                            <div class="progress-info">
+                                <span>Current Level: 6</span>
+                                <span>85%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <div class="card-icon" style="background: rgba(255, 152, 0, 0.2);">
+                                <i class="fas fa-eye" style="color: #FF9800;"></i>
+                            </div>
+                            <h3 class="card-title">Visual Skills</h3>
+                        </div>
+                        <div class="progress-container">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 70%;"></div>
+                            </div>
+                            <div class="progress-info">
+                                <span>Current Level: 5</span>
+                                <span>70%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Games Screen -->
+        <div class="screen-container" id="games-screen">
+            <div class="screen-content">
+                <h2 style="font-size: 28px; margin-bottom: 20px;">Cognitive Games</h2>
+                <p style="opacity: 0.8; margin-bottom: 30px;">Select a game to start training your brain</p>
+
+                <div class="games-grid">
+                    <div class="game-card">
+                        <div class="game-icon" style="background: rgba(255, 82, 82, 0.15); color: #FF5252;">
+                            <i class="fas fa-th-large"></i>
+                        </div>
+                        <h3 class="game-title">Memory Grid</h3>
+                        <p class="game-desc">Remember patterns of highlighted cells to strengthen your working memory.
+                        </p>
+                        <a href="memory-grid.html" class="play-btn">Play Now</a>
+                    </div>
+
+                    <div class="game-card">
+                        <div class="game-icon" style="background: rgba(33, 150, 243, 0.15); color: #2196F3;">
+                            <i class="fas fa-puzzle-piece"></i>
+                        </div>
+                        <h3 class="game-title">Logic Flips</h3>
+                        <p class="game-desc">Solve logic gate puzzles by flipping inputs to match the target output.</p>
+                        <a href="logicflips.html" class="play-btn">Play Now</a>
+                    </div>
+
+                    <div class="game-card">
+                        <div class="game-icon" style="background: rgba(76, 175, 80, 0.15); color: #4CAF50;">
+                            <i class="fas fa-flag-checkered"></i>
+                        </div>
+                        <h3 class="game-title">Pattern Race</h3>
+                        <p class="game-desc">Complete patterns before time runs out. Speed and accuracy are key!</p>
+                        <a href="patternracegame.html" class="play-btn">Play Now</a>
+                    </div>
+
+                    <div class="game-card">
+                        <div class="game-icon" style="background: rgba(255, 152, 0, 0.15); color: #FF9800;">
+                            <i class="fas fa-palette"></i>
+                        </div>
+                        <h3 class="game-title">Color Tracking</h3>
+                        <p class="game-desc">Track and select colors in sequence as they move across the screen.</p>
+                        <a href="color-tracking.html" class="play-btn">Play Now</a>
+                    </div>
+                    <div class="game-card">
+                        <div class="game-icon" style="background: rgba(76, 175, 80, 0.15); color: #4CAF50;">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <h3 class="game-title">Shooting Star</h3>
+                        <p class="game-desc">Shoot the enemy, power-up and improve your reaction time!</p>
+                        <a href="pixel zombie shooter.html" class="play-btn">Play Now</a>
+                    </div>
+
+                    <div class="game-card">
+                        <div class="game-icon" style="background: rgba(255, 152, 0, 0.15); color: #FF9800;">
+                            <i class="fas fa-rocket"></i>
+                        </div>
+                        <h3 class="game-title">Jet Packs</h3>
+                        <p class="game-desc">Improve hand eye coordination and quick thinking by flying.</p>
+                        <a href="Jet-Pack.html" class="play-btn">Play Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Screen -->
+        <div class="screen-container" id="analytics-screen">
+            <div class="screen-content">
+                <h2 style="font-size: 28px; margin-bottom: 20px;">Cognitive Analytics</h2>
+                <p style="opacity: 0.8; margin-bottom: 30px;">Track your progress and see how you're improving</p>
+
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Cognitive Performance</h3>
+                        <div class="chart-actions">
+                            <button class="chart-btn active">Weekly</button>
+                            <button class="chart-btn">Monthly</button>
+                            <button class="chart-btn">Yearly</button>
+                        </div>
+                    </div>
+                    <div class="chart-placeholder">
+                        <p>Performance charts will appear here</p>
+                    </div>
+                </div>
+
+                <div class="chart-container" style="margin-top: 25px;">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Skill Distribution</h3>
+                    </div>
+                    <div class="chart-placeholder">
+                        <p>Skill distribution radar chart will appear here</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Learn Screen -->
+        <div class="screen-container" id="learn-screen">
+            <div class="screen-content">
+                <h2 style="font-size: 28px; margin-bottom: 20px;">Learn About Your Brain</h2>
+                <p style="opacity: 0.8; margin-bottom: 30px;">Discover fascinating insights about cognitive functions
+                </p>
+
+                <div class="learn-grid">
+                    <div class="learn-card">
+                        <h3 class="learn-title"><i class="fas fa-lightbulb" style="color: #FFCC00;"></i> Neuroplasticity
+                        </h3>
+                        <div class="learn-content">
+                            <p>Your brain's ability to reorganize itself by forming new neural connections throughout
+                                life. This allows the neurons to compensate for injury and adjust their activities in
+                                response to new situations.</p>
+                            <ul>
+                                <li>Brain can change at any age</li>
+                                <li>Learning new skills strengthens neural pathways</li>
+                                <li>Regular mental exercise maintains plasticity</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="learn-card">
+                        <h3 class="learn-title"><i class="fas fa-memory" style="color: #B13BFF;"></i> Working Memory
+                        </h3>
+                        <div class="learn-content">
+                            <p>The cognitive system that holds information temporarily for processing. It's crucial for
+                                reasoning, decision-making, and behavior guidance.</p>
+                            <ul>
+                                <li>Holds about 7 items for 20-30 seconds</li>
+                                <li>Can be improved with practice</li>
+                                <li>Essential for complex cognitive tasks</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="learn-card">
+                        <h3 class="learn-title"><i class="fas fa-eye" style="color: #2196F3;"></i> Visual Processing
+                        </h3>
+                        <div class="learn-content">
+                            <p>How your brain makes sense of what you see. This includes recognizing shapes, colors, and
+                                motion, and understanding spatial relationships.</p>
+                            <ul>
+                                <li>Processes information faster than text</li>
+                                <li>Essential for navigation and object recognition</li>
+                                <li>Can be trained with pattern recognition games</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="learn-card">
+                        <h3 class="learn-title"><i class="fas fa-bolt" style="color: #4CAF50;"></i> Cognitive Speed</h3>
+                        <div class="learn-content">
+                            <p>The ability to perform simple repetitive cognitive tasks quickly and fluently. It's
+                                important for processing information efficiently.</p>
+                            <ul>
+                                <li>Declines gradually with age</li>
+                                <li>Can be maintained with regular mental exercise</li>
+                                <li>Essential for quick decision-making</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>© 2025 NeuraNest Cognitive Gym. Train your brain, transform your mind.</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Screen management
+            const screens = {
+                'welcome': document.getElementById('welcome-screen'),
+                'dashboard': document.getElementById('dashboard-screen'),
+                'games': document.getElementById('games-screen'),
+                'analytics': document.getElementById('analytics-screen'),
+                'learn': document.getElementById('learn-screen')
+            };
+
+            const navButtons = document.querySelectorAll('.nav-btn');
+
+            // Function to show a specific screen
+            function showScreen(screenId) {
+                // Hide all screens
+                Object.values(screens).forEach(screen => {
+                    screen.classList.remove('active');
+                });
+
+                // Show the requested screen
+                if (screens[screenId]) {
+                    screens[screenId].classList.add('active');
+                }
+
+                if (screenId === 'analytics') {
+                    renderAnalyticsCharts();
+                }
+
+                // Update active button
+                navButtons.forEach(btn => {
+                    btn.classList.remove('active');
+                    if (btn.getAttribute('data-screen') === screenId) {
+                        btn.classList.add('active');
+                    }
+                });
+            }
+
+            // Set up navigation button event listeners
+            navButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const screenId = this.getAttribute('data-screen');
+                    showScreen(screenId);
+                });
+            });
+
+            // Set up start button
+            const startBtn = document.querySelector('.start-btn');
+            startBtn.addEventListener('click', function () {
+                const nameInput = document.querySelector('.name-input');
+                if (nameInput.value.trim() !== '') {
+                    showScreen('dashboard');
+                } else {
+                    nameInput.style.borderColor = '#FF5252';
+                    setTimeout(() => {
+                        nameInput.style.borderColor = '#B13BFF';
+                    }, 1000);
+                }
+            });
+
+            // Set up game card animations
+            const gameCards = document.querySelectorAll('.game-card');
+            gameCards.forEach(card => {
+                card.addEventListener('mouseenter', function () {
+                    this.style.transform = 'translateY(-10px)';
+                });
+
+                card.addEventListener('mouseleave', function () {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+
+            // Initialize with welcome screen
+            showScreen('welcome');
+        });
+    </script>
+</body>
+
+</html>
