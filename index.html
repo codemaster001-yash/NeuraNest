@@ -280,7 +280,8 @@
         /* Games Screen */
         .games-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
+            /* Always 3 columns */
             gap: 25px;
             margin-top: 30px;
         }
@@ -399,6 +400,7 @@
 
         .chart-placeholder {
             height: 300px;
+            min-height: 220px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -407,6 +409,15 @@
             margin-top: 20px;
             font-size: 18px;
             opacity: 0.7;
+            position: relative;
+        }
+
+        .chart-placeholder canvas {
+            width: 100% !important;
+            height: 100% !important;
+            max-width: 100%;
+            max-height: 100%;
+            display: block;
         }
 
         /* Learn Screen */
@@ -516,6 +527,13 @@
 
         /* Responsive Design */
         @media (max-width: 768px) {
+
+            @media (max-width: 768px) {
+                .games-grid {
+                    grid-template-columns: 1fr;
+                }
+            }
+
             .header {
                 flex-direction: column;
                 gap: 20px;
@@ -558,6 +576,7 @@
             }
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
@@ -611,7 +630,7 @@
         <!-- Dashboard Screen -->
         <div class="screen-container" id="dashboard-screen">
             <div class="screen-content">
-                <h2 style="font-size: 28px; margin-bottom: 20px;">Cognitive Dashboard</h2>
+                <h2 id="dashboard-greeting" style="font-size: 28px; margin-bottom: 20px;">Cognitive Dashboard</h2>
                 <p style="opacity: 0.8; margin-bottom: 30px;">Track your progress and continue your brain training
                     journey</p>
 
@@ -764,14 +783,9 @@
                 <div class="chart-container">
                     <div class="chart-header">
                         <h3 class="chart-title">Cognitive Performance</h3>
-                        <div class="chart-actions">
-                            <button class="chart-btn active">Weekly</button>
-                            <button class="chart-btn">Monthly</button>
-                            <button class="chart-btn">Yearly</button>
-                        </div>
                     </div>
                     <div class="chart-placeholder">
-                        <p>Performance charts will appear here</p>
+                        <canvas id="analyticsChart" width="400" height="250"></canvas>
                     </div>
                 </div>
 
@@ -780,7 +794,7 @@
                         <h3 class="chart-title">Skill Distribution</h3>
                     </div>
                     <div class="chart-placeholder">
-                        <p>Skill distribution radar chart will appear here</p>
+                        <canvas id="radarChart" width="400" height="250"></canvas>
                     </div>
                 </div>
             </div>
@@ -922,6 +936,202 @@
 
             const navButtons = document.querySelectorAll('.nav-btn');
 
+            const averageScores = {
+                memoryGrid: 60,
+                logicFlips: 50,
+                patternRace: 55,
+                colorTracking: 65,
+                shootingStar: 70,
+                jetPacks: 60
+            };
+
+            function getGameScores() {
+                return {
+                    memoryGrid: Number(localStorage.getItem('score_memory_grid')) || 0,
+                    logicFlips: Number(localStorage.getItem('score_logic_flips')) || 0,
+                    patternRace: Number(localStorage.getItem('score_pattern_race')) || 0,
+                    colorTracking: Number(localStorage.getItem('score_color_tracking')) || 0,
+                    shootingStar: Number(localStorage.getItem('score_shooting_star')) || 0,
+                    jetPacks: Number(localStorage.getItem('score_jet_packs')) || 0
+                };
+            }
+
+            function renderAnalyticsCharts() {
+                const userScores = getGameScores();
+                const labels = [
+                    'Memory Grid',
+                    'Logic Flips',
+                    'Pattern Race',
+                    'Color Tracking',
+                    'Shooting Star',
+                    'Jet Packs'
+                ];
+                const userData = [
+                    userScores.memoryGrid,
+                    userScores.logicFlips,
+                    userScores.patternRace,
+                    userScores.colorTracking,
+                    userScores.shootingStar,
+                    userScores.jetPacks
+                ];
+                const avgData = [
+                    averageScores.memoryGrid,
+                    averageScores.logicFlips,
+                    averageScores.patternRace,
+                    averageScores.colorTracking,
+                    averageScores.shootingStar,
+                    averageScores.jetPacks
+                ];
+
+                // If all user scores are 0, show average as user's score (first time)
+                const allZero = userData.every(score => score === 0);
+                const displayUserData = allZero ? avgData : userData;
+                const displayUserDataScaled = displayUserData.map(v => v / 100);
+                const avgDataScaled = avgData.map(v => v / 100);
+
+                // Remove existing charts if present
+                if (window.analyticsChart && typeof window.analyticsChart.destroy === 'function') {
+                    window.analyticsChart.destroy();
+                }
+                if (window.radarChart && typeof window.radarChart.destroy === 'function') {
+                    window.radarChart.destroy();
+                }
+
+                // Bar Chart: Cognitive Performance
+                const ctxBar = document.getElementById('analyticsChart').getContext('2d');
+                window.analyticsChart = new Chart(ctxBar, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Your Score',
+                                data: displayUserData,
+                                backgroundColor: [
+                                    '#FFD600', // bright yellow
+                                    '#FF3D00', // bright orange-red
+                                    '#00E676', // bright green
+                                    '#2979FF', // bright blue
+                                    '#FFEA00', // bright yellow
+                                    '#00B8D4'  // bright cyan
+                                ]
+                            },
+                            {
+                                label: 'Average',
+                                data: avgData,
+                                backgroundColor: 'rgba(255, 204, 0, 0.3)'
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: '#fff', // White legend text
+                                    font: { size: 16 }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100,
+                                ticks: {
+                                    color: '#fff' // <-- White y-axis labels
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Score',
+                                    color: '#fff' // <-- White y-axis title (optional)
+                                }
+                            },
+                            x: {
+                                ticks: {
+                                    color: '#fff' // <-- White x-axis labels
+                                },
+                                title: {
+                                    display: false
+                                }
+                            }
+                        }
+                    }
+                });
+                // Radar Chart: Skill Distribution
+                // Add a canvas for radar chart if not present
+                let radarCanvas = document.getElementById('radarChart');
+                if (!radarCanvas) {
+                    const radarContainer = document.querySelectorAll('.chart-container')[1];
+                    radarCanvas = document.createElement('canvas');
+                    radarCanvas.id = 'radarChart';
+                    radarCanvas.width = 400;
+                    radarCanvas.height = 250;
+                    radarContainer.querySelector('.chart-placeholder').innerHTML = '';
+                    radarContainer.querySelector('.chart-placeholder').appendChild(radarCanvas);
+                }
+                const ctxRadar = radarCanvas.getContext('2d');
+                window.radarChart = new Chart(ctxRadar, {
+                    type: 'radar',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Your Skill',
+                                data: displayUserDataScaled,
+                                backgroundColor: 'rgba(255, 193, 7, 0.3)', // Bright yellow
+                                borderColor: 'rgba(255, 193, 7, 1)',       // Bright yellow
+                                pointBackgroundColor: 'rgba(255, 193, 7, 1)',
+                                pointBorderColor: '#fff',
+                                pointHoverBackgroundColor: '#fff',
+                                pointHoverBorderColor: 'rgba(255, 193, 7, 1)'
+                            },
+                            {
+                                label: 'Average',
+                                data: avgDataScaled,
+                                backgroundColor: 'rgba(33, 150, 243, 0.3)', // Bright blue
+                                borderColor: 'rgba(33, 150, 243, 1)',       // Bright blue
+                                pointBackgroundColor: 'rgba(33, 150, 243, 1)',
+                                pointBorderColor: '#fff',
+                                pointHoverBackgroundColor: '#fff',
+                                pointHoverBorderColor: 'rgba(33, 150, 243, 1)'
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: '#fff', // White legend text
+                                    font: { size: 16 }
+                                }
+                            }
+                        },
+                        scales: {
+                            r: {
+                                min: 0,
+                                max: 1,
+                                ticks: {
+                                    color: '#fff', // White scale numbers
+                                    stepSize: 0.2,
+                                    callback: v => v.toFixed(1)
+                                },
+                                pointLabels: {
+                                    color: '#fff', // White axis labels
+                                    font: { size: 15, weight: 'bold' }
+                                },
+                                grid: {
+                                    color: 'rgba(255,255,255,0.2)'
+                                },
+                                angleLines: {
+                                    color: 'rgba(255,255,255,0.3)'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
             // Function to show a specific screen
             function showScreen(screenId) {
                 // Hide all screens
@@ -929,6 +1139,13 @@
                     screen.classList.remove('active');
                 });
 
+                if (screenId === 'dashboard') {
+                    const username = localStorage.getItem('neuranest_username') || 'User';
+                    const greeting = document.getElementById('dashboard-greeting');
+                    if (greeting) {
+                        greeting.textContent = `Hi ${username}! This is your cognitive dashboard`;
+                    }
+                }
                 // Show the requested screen
                 if (screens[screenId]) {
                     screens[screenId].classList.add('active');
@@ -945,7 +1162,10 @@
                         btn.classList.add('active');
                     }
                 });
+
             }
+
+
 
             // Set up navigation button event listeners
             navButtons.forEach(button => {
@@ -960,6 +1180,7 @@
             startBtn.addEventListener('click', function () {
                 const nameInput = document.querySelector('.name-input');
                 if (nameInput.value.trim() !== '') {
+                    localStorage.setItem('neuranest_username', nameInput.value.trim());
                     showScreen('dashboard');
                 } else {
                     nameInput.style.borderColor = '#FF5252';
