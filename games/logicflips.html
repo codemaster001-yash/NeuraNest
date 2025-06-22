@@ -914,7 +914,7 @@
 
             // Initialize the game
             initGame();
-
+            localStorage.setItem('score_logic_flips', score);
             // Event listeners
             startBtn.addEventListener('click', startGame);
             checkBtn.addEventListener('click', checkSolution);
