@@ -630,7 +630,7 @@
             // Initialize the game
             initGameBoard();
             initLevelIndicator();
-
+            localStorage.setItem('score_memory_grid', score);
             // Event listeners
             startBtn.addEventListener('click', startGame);
             resetBtn.addEventListener('click', resetGame);
