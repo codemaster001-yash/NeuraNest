@@ -871,6 +871,7 @@
         window.onload = function () {
             initGame();
             updateHUD(); // Display initial score/level
+            localStorage.setItem('score_shooting_star', score);
             personalBestDisplay.textContent = personalBest; // Update PB on start screen
             gameLoop(0); // Start the loop to render initial screen
         };
