@@ -704,7 +704,7 @@
             instructionsScreen.classList.add('hidden');
             startScreen.classList.remove('hidden');
         });
-
+        localStorage.setItem('score_jet_pack', score);
         // Initial setup
         window.onload = function () {
             initGame();
