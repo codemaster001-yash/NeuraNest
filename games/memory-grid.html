@@ -240,6 +240,24 @@
             margin-top: 15px;
         }
 
+        .level-heart {
+            font-size: 22px;
+            transition: opacity 0.3s, transform 0.3s;
+            filter: drop-shadow(0 0 6px black);
+            margin: 0 2px;
+        }
+
+        .level-heart.active {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .level-heart:not(.active) {
+            opacity: 0.3;
+            filter: none;
+            transform: scale(1);
+        }
+
         .level-dot {
             width: 12px;
             height: 12px;
@@ -453,12 +471,15 @@
                 levelIndicator.innerHTML = '';
 
                 for (let i = 0; i < maxMistakes; i++) {
-                    const dot = document.createElement('div');
-                    dot.className = 'level-dot';
+                    const heart = document.createElement('div');
+                    heart.className = 'level-heart';
+                    heart.textContent = '💛'; /*❤️*/
                     if (i < maxMistakes - mistakes) {
-                        dot.classList.add('active');
+                        heart.classList.add('active');
+                    } else {
+                        heart.style.opacity = '0.3'; // faded for lost life
                     }
-                    levelIndicator.appendChild(dot);
+                    levelIndicator.appendChild(heart);
                 }
             }
 
