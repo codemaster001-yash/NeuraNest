@@ -333,6 +333,10 @@
             margin-bottom: 10px;
         }
 
+        .options-grid.hidden {
+            display: none !important;
+        }
+
         .pulse {
             animation: pulse 2s infinite;
         }
@@ -467,25 +471,32 @@
             background-color: #FF5252;
         }
 
+        /* Red */
         .color-2 {
-            background-color: #4CAF50;
+            background-color: #43A047;
         }
 
+        /* Green */
         .color-3 {
-            background-color: #2196F3;
+            background-color: #2979FF;
         }
 
+        /* Blue */
         .color-4 {
-            background-color: #FF9800;
+            background-color: #FFD600;
         }
 
+        /* Yellow */
         .color-5 {
-            background-color: #9C27B0;
+            background-color: #FF6D00;
         }
 
+        /* Orange */
         .color-6 {
-            background-color: #00BCD4;
+            background-color: #8E24AA;
         }
+
+        /* Purple */
 
         .shape-circle {
             border-radius: 50%;
@@ -496,12 +507,10 @@
         }
 
         .shape-triangle {
-            background: none !important;
-            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+            border-radius: 10px;
         }
 
         .shape-diamond {
-            background: none !important;
             clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
         }
     </style>
@@ -612,12 +621,12 @@
 
             // Game settings
             const colors = ['color-1', 'color-2', 'color-3', 'color-4', 'color-5', 'color-6'];
-            const shapes = ['shape-circle', 'shape-square', 'shape-triangle', 'shape-diamond'];
+            const shapes = ['shape-circle', 'shape-square', 'shape-triangle'];
+            const cellShapes = ['shape-circle', 'shape-square'];
             const shapeIcons = {
                 'shape-circle': 'fas fa-circle',
                 'shape-square': 'fas fa-square',
                 'shape-triangle': 'fas fa-play',
-                'shape-diamond': 'fas fa-gem'
             };
 
             // DOM elements
@@ -634,10 +643,11 @@
 
             // Initialize the game
             function initGame() {
-                generateOptions();
+                // Do NOT call generateOptions() here!
                 updateUI();
                 messageElement.textContent = "Click START to begin the game";
                 messageElement.classList.remove('tada', 'shake');
+                optionsGrid.classList.add('hidden'); // Hide grid before game starts
             }
 
             // Start the game
@@ -676,20 +686,25 @@
 
                 // Calculate pattern length based on level
                 const patternLength = Math.min(3 + Math.floor(level / 2), 8);
+                // Add this array for cell shapes (backgrounds)
+
 
                 // Generate new pattern
                 for (let i = 0; i < patternLength; i++) {
                     const color = colors[Math.floor(Math.random() * colors.length)];
-                    const shape = shapes[Math.floor(Math.random() * shapes.length)];
-                    currentPattern.push({ color, shape });
+                    const cellShape = cellShapes[Math.floor(Math.random() * cellShapes.length)];
+                    const iconShape = shapes[Math.floor(Math.random() * shapes.length)];
+                    const icon = shapeIcons[iconShape];
+                    currentPattern.push({ color, cellShape, iconShape, icon });
 
-                    // Create pattern display item
+                    // Create pattern display item (no color class on pattern-item)
                     const patternItem = document.createElement('div');
-                    patternItem.className = `pattern-item ${color}`;
+                    patternItem.className = `pattern-item`;
 
+                    // Color and cell shape class on pattern-shape
                     const patternShape = document.createElement('div');
-                    patternShape.className = `pattern-shape ${shape}`;
-                    patternShape.innerHTML = `<i class="${shapeIcons[shape]}"></i>`;
+                    patternShape.className = `pattern-shape ${color} ${cellShape}`;
+                    patternShape.innerHTML = `<i class="${icon}"></i>`;
 
                     patternItem.appendChild(patternShape);
                     patternDisplay.appendChild(patternItem);
@@ -698,12 +713,19 @@
                 // Show pattern to player
                 messageElement.textContent = "Memorize the pattern...";
 
-                // Hide pattern after delay
+                // HIDE the options grid while showing the pattern
+                optionsGrid.classList.add('hidden');
+
+                // Hide pattern after delay, THEN show grid and generate options
                 setTimeout(() => {
                     Array.from(patternDisplay.children).forEach(item => {
                         item.classList.add('hidden');
                     });
                     messageElement.textContent = "Your turn! Recreate the pattern";
+
+                    // SHOW and refresh the options grid now
+                    optionsGrid.classList.remove('hidden');
+                    generateOptions();
                     startTimer();
                 }, 3000);
             }
@@ -712,23 +734,46 @@
             function generateOptions() {
                 optionsGrid.innerHTML = '';
 
-                // Create 12 options (some duplicates to increase difficulty)
-                const options = [];
-                for (let i = 0; i < 12; i++) {
+                // 1. Count how many of each color-cellShape-iconShape combo are in the pattern
+                const patternCounts = {};
+                currentPattern.forEach(({ color, cellShape, iconShape, icon }) => {
+                    const key = `${color}|${cellShape}|${iconShape}|${icon}`;
+                    patternCounts[key] = (patternCounts[key] || 0) + 1;
+                });
+
+                // 2. Add all pattern tiles (with duplicates) to options
+                let options = currentPattern.map(({ color, cellShape, iconShape, icon }) => ({ color, cellShape, iconShape, icon }));
+
+                // 3. Fill up to 12 with random tiles
+                while (options.length < 12) {
                     const color = colors[Math.floor(Math.random() * colors.length)];
-                    const shape = shapes[Math.floor(Math.random() * shapes.length)];
-                    options.push({ color, shape });
+                    const cellShape = cellShapes[Math.floor(Math.random() * cellShapes.length)];
+                    const iconShape = shapes[Math.floor(Math.random() * shapes.length)];
+                    const icon = shapeIcons[iconShape];
+                    const key = `${color}|${cellShape}|${iconShape}|${icon}`;
+
+                    const inPattern = patternCounts[key] || 0;
+                    const inOptions = options.filter(opt => opt.color === color && opt.cellShape === cellShape && opt.iconShape === iconShape && opt.icon === icon).length;
+                    if (inOptions < inPattern || inPattern === 0) {
+                        options.push({ color, cellShape, iconShape, icon });
+                    }
                 }
 
-                // Add options to grid
+                // 4. Shuffle options
+                for (let i = options.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [options[i], options[j]] = [options[j], options[i]];
+                }
+
+                // 5. Render options
                 options.forEach((option, index) => {
                     const optionItem = document.createElement('div');
                     optionItem.className = 'option-item';
                     optionItem.dataset.index = index;
 
                     const optionShape = document.createElement('div');
-                    optionShape.className = `option-shape ${option.color} ${option.shape}`;
-                    optionShape.innerHTML = `<i class="${shapeIcons[option.shape]}"></i>`;
+                    optionShape.className = `option-shape ${option.color} ${option.cellShape}`;
+                    optionShape.innerHTML = `<i class="${option.icon}"></i>`;
 
                     optionItem.appendChild(optionShape);
                     optionItem.addEventListener('click', () => selectOption(optionItem, option));
@@ -747,11 +792,35 @@
                 // Add to user pattern
                 userPattern.push(option);
 
-                // Check if correct
+                // Get the current pattern cell to match
                 const currentIndex = userPattern.length - 1;
-                if (option.color === currentPattern[currentIndex].color &&
-                    option.shape === currentPattern[currentIndex].shape) {
+                const patternCell = currentPattern[currentIndex];
 
+                // Count how many times this combo has appeared so far in the pattern up to currentIndex
+                const neededCount = currentPattern
+                    .slice(0, currentIndex + 1)
+                    .filter(cell =>
+                        cell.color === option.color &&
+                        cell.cellShape === option.cellShape &&
+                        cell.iconShape === option.iconShape
+                    ).length;
+
+                // Count how many times the user has already selected this combo (including this click)
+                const selectedCount = userPattern
+                    .filter(cell =>
+                        cell.color === option.color &&
+                        cell.cellShape === option.cellShape &&
+                        cell.iconShape === option.iconShape
+                    ).length;
+
+                // Check if the selected option matches the current pattern cell,
+                // and if the user hasn't already used up all allowed matches for this combo
+                if (
+                    option.color === patternCell.color &&
+                    option.cellShape === patternCell.cellShape &&
+                    option.iconShape === patternCell.iconShape &&
+                    selectedCount <= neededCount
+                ) {
                     // Show pattern item as revealed
                     patternDisplay.children[currentIndex].classList.remove('hidden');
                     patternDisplay.children[currentIndex].classList.add('bounce');
