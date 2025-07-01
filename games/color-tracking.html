@@ -205,7 +205,20 @@
             position: absolute;
             font-size: 30px;
             color: #4CAF50;
-            text-shadow: 0 0 10px rgba(76, 175, 80, 0.7);
+            text-shadow: 0 0 10px rgba(76, 175, 80, 0.7), 0 0 2px #fff, 0 0 2px #fff;
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #4CAF50;
+            box-sizing: border-box;
+            pointer-events: none;
         }
 
         .controls {
@@ -504,6 +517,11 @@
         .color-8 {
             background: linear-gradient(135deg, #7C4DFF, #651FFF);
         }
+
+        #sequence {
+            color: red;
+            /* Bright cyan, change as desired */
+        }
     </style>
 </head>
 
@@ -524,7 +542,7 @@
                     <div class="info-value" id="level">1</div>
                 </div>
                 <div class="info-box">
-                    <div class="info-label"><i class="fas fa-bullseye"></i> SEQUENCE</div>
+                    <div class="info-label"><i class="fas fa-bullseye"></i> COLORS</div>
                     <div class="info-value" id="sequence">3</div>
                 </div>
             </div>
