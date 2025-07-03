@@ -11,11 +11,18 @@ Welcome to **NeuraNest**, a sleek, minimalist web application designed to be a d
 
 It’s a mindful, calming experience for all ages, from toddlers learning to track colors to seniors keeping their minds sharp.
 
-### [🚀 View the Live Demo\!](https://www.google.com/search?q=https://your-github-username.github.io/NeuraNest/)
+### [🚀 View the Live Demo\!]([https://www.google.com/search?q=https://your-github-username.github.io/NeuraNest/](https://codemaster001-yash.github.io/NeuraNest/))
 
-*(Replace with your actual GitHub Pages link)*
+## 📸 App Screenshots
 
-*(Pro-tip: Replace this placeholder with a GIF showing off the app's smooth transitions, game-play, and the dark/light mode toggle\!)*
+### Games
+![Games](screenshots/scht1.png)
+
+### Progress
+![Progress](screenshots/scht3.png)
+
+### Score
+![Scores](screenshots/scht2.png)
 
 ## ✨ Core Features
 
