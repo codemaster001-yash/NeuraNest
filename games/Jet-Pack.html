@@ -908,8 +908,8 @@
             updateHUD();
             updateLifelinesDisplay();
             personalBest = localStorage.getItem('jetpackManiaBestScore') ? parseInt(localStorage.getItem('jetpackManiaBestScore')) : 0;
-            personalBestDisplay.textContent = personalBest;
-            gameOverPersonalBestDisplay.textContent = personalBest;
+            personalBestDisplay.textContent = Math.floor(personalBest);
+            gameOverPersonalBestDisplay.textContent = Math.floor(personalBest);
         }
 
         function startGame() {
