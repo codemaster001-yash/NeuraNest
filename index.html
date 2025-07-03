@@ -116,6 +116,27 @@
             box-shadow: 0 0 15px rgba(177, 59, 255, 0.5);
         }
 
+        .nav-btn[data-screen="games"] {
+            background: var(--highlight) !important;
+            color: #222 !important;
+            box-shadow: 0 0 25px 5px rgba(255, 204, 0, 0.5), 0 0 0 4px rgba(255, 204, 0, 0.2);
+            animation: pop-glow 1s infinite alternate;
+            border: 2px solid var(--highlight);
+            z-index: 2;
+        }
+
+        @keyframes pop-glow {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 25px 9px rgba(207, 223, 224, 0.5);
+            }
+
+            100% {
+                transform: scale(1.12);
+                box-shadow: 0 0 10px 9px rgba(17, 194, 248, 0.7);
+            }
+        }
+
         /* Screen Container */
         .screen-container {
             flex: 1;
@@ -138,6 +159,7 @@
             padding: 30px;
             height: 100%;
             overflow-y: auto;
+            overflow-x: hidden;
         }
 
         /* Welcome Screen */
@@ -488,6 +510,180 @@
             transition: box-shadow 0.2s, transform 0.2s;
         }
 
+        #test-question-area {
+            margin-bottom: 20px;
+            font-size: 20px;
+            overflow-x: hidden;
+            /* Prevent horizontal scroll */
+            max-width: 100%;
+            /* Prevent content overflow */
+            box-sizing: border-box;
+            /* Include padding in width */
+            word-break: break-word;
+            /* Break long words if needed */
+        }
+
+        .test-answers {
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .test-answer-btn {
+            padding: 12px 18px;
+            background: var(--card-bg);
+            border: 1px solid var(--accent);
+            border-radius: 10px;
+            color: var(--text-light);
+            font-size: 17px;
+            cursor: pointer;
+            transition: background 0.2s;
+            text-align: left;
+        }
+
+        /* Test answer feedback styles */
+        .test-answer-btn.correct {
+            background: #4CAF50 !important;
+            border-color: #4CAF50 !important;
+            color: #fff !important;
+            font-weight: bold;
+            animation: pop-green 0.3s;
+        }
+
+        .test-answer-btn.wrong {
+            background: #FF5252 !important;
+            border-color: #FF5252 !important;
+            color: #fff !important;
+            font-weight: bold;
+            animation: pop-red 0.3s;
+        }
+
+        @keyframes pop-green {
+            0% {
+                transform: scale(1);
+            }
+
+            60% {
+                transform: scale(1.08);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes pop-red {
+            0% {
+                transform: scale(1);
+            }
+
+            60% {
+                transform: scale(1.08);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* Test result bars */
+        .result-skill-bar-container {
+            margin: 15px 0;
+            text-align: left;
+        }
+
+        .result-skill-bar-container .skill-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .result-skill-bar {
+            height: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .result-skill-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--highlight));
+            border-radius: 6px;
+            width: 0%;
+            transition: width 1s ease-out;
+        }
+
+        /* Dashboard ability cards */
+        .dashboard-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .card-title {
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        .test-score-display {
+            text-align: center;
+            margin: auto 0;
+        }
+
+        .test-score-display p:first-child {
+            font-size: 16px;
+            opacity: 0.8;
+            margin-bottom: 10px;
+        }
+
+        .test-score-display p:last-child {
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--highlight);
+        }
+
+        .test-answer-btn:hover {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        #test-result {
+            font-size: 22px;
+            margin-top: 30px;
+            text-align: center;
+        }
+
         /* Footer */
         .footer {
             text-align: center;
@@ -588,10 +784,10 @@
                 <div class="logo-text">NeuraNest</div>
             </div>
             <div class="nav-buttons">
-                <div class="nav-btn" data-screen="dashboard"><i class="fas fa-home"></i></div>
-                <div class="nav-btn" data-screen="games"><i class="fas fa-gamepad"></i></div>
-                <div class="nav-btn" data-screen="analytics"><i class="fas fa-chart-line"></i></div>
-                <div class="nav-btn" data-screen="learn"><i class="fas fa-book"></i></div>
+                <div class="nav-btn" data-screen="dashboard" title="Dashboard"><i class="fas fa-home"></i></div>
+                <div class="nav-btn" data-screen="games" title="Games"><i class="fas fa-gamepad"></i></div>
+                <div class="nav-btn" data-screen="analytics" title="Analytics"><i class="fas fa-chart-line"></i></div>
+                <div class="nav-btn" data-screen="learn" title="Learn"><i class="fas fa-book"></i></div>
             </div>
         </div>
 
@@ -627,86 +823,27 @@
             </div>
         </div>
 
-        <!-- Dashboard Screen -->
         <div class="screen-container" id="dashboard-screen">
             <div class="screen-content">
                 <h2 id="dashboard-greeting" style="font-size: 28px; margin-bottom: 20px;">Cognitive Dashboard</h2>
                 <p style="opacity: 0.8; margin-bottom: 30px;">Track your progress and continue your brain training
                     journey</p>
-
+                <button id="take-test-btn" class="start-btn" style="max-width:300px;margin-bottom:30px;">Take the
+                    Cognitive Test</button>
                 <div class="dashboard-grid">
-                    <div class="dashboard-card">
-                        <div class="card-header">
-                            <div class="card-icon" style="background: rgba(177, 59, 255, 0.2);">
-                                <i class="fas fa-brain" style="color: #B13BFF;"></i>
-                            </div>
-                            <h3 class="card-title">Memory</h3>
-                        </div>
-                        <div class="progress-container">
-                            <div class="progress-bar">
-                                <div class="progress-fill"></div>
-                            </div>
-                            <div class="progress-info">
-                                <span>Current Level: 5</span>
-                                <span>75%</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="dashboard-card">
-                        <div class="card-header">
-                            <div class="card-icon" style="background: rgba(255, 204, 0, 0.2);">
-                                <i class="fas fa-calculator" style="color: #FFCC00;"></i>
-                            </div>
-                            <h3 class="card-title">Logic</h3>
-                        </div>
-                        <div class="progress-container">
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 60%;"></div>
-                            </div>
-                            <div class="progress-info">
-                                <span>Current Level: 4</span>
-                                <span>60%</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="dashboard-card">
-                        <div class="card-header">
-                            <div class="card-icon" style="background: rgba(76, 175, 80, 0.2);">
-                                <i class="fas fa-bullseye" style="color: #4CAF50;"></i>
-                            </div>
-                            <h3 class="card-title">Attention</h3>
-                        </div>
-                        <div class="progress-container">
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 85%;"></div>
-                            </div>
-                            <div class="progress-info">
-                                <span>Current Level: 6</span>
-                                <span>85%</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="dashboard-card">
-                        <div class="card-header">
-                            <div class="card-icon" style="background: rgba(255, 152, 0, 0.2);">
-                                <i class="fas fa-eye" style="color: #FF9800;"></i>
-                            </div>
-                            <h3 class="card-title">Visual Skills</h3>
-                        </div>
-                        <div class="progress-container">
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 70%;"></div>
-                            </div>
-                            <div class="progress-info">
-                                <span>Current Level: 5</span>
-                                <span>70%</span>
-                            </div>
-                        </div>
-                    </div>
+                    <!-- Test score cards will be dynamically inserted here -->
                 </div>
+            </div>
+        </div>
+
+        <!-- TEST SCREEN (replace the old test screen markup) -->
+        <div class="screen-container" id="test-screen">
+            <div class="screen-content">
+                <h2 style="font-size: 28px; margin-bottom: 20px;">Cognitive Test</h2>
+                <p style="opacity: 0.8; margin-bottom: 30px;">Answer 15 fun questions to assess your skills!</p>
+                <div id="test-question-area"></div>
+                <div id="test-progress" style="margin:20px 0;"></div>
+                <div id="test-result" style="display:none;"></div>
             </div>
         </div>
 
@@ -925,270 +1062,399 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Screen management
+            // --- App Setup ---
             const screens = {
                 'welcome': document.getElementById('welcome-screen'),
                 'dashboard': document.getElementById('dashboard-screen'),
                 'games': document.getElementById('games-screen'),
                 'analytics': document.getElementById('analytics-screen'),
-                'learn': document.getElementById('learn-screen')
+                'learn': document.getElementById('learn-screen'),
+                'test': document.getElementById('test-screen')
             };
-
             const navButtons = document.querySelectorAll('.nav-btn');
+            const startBtn = document.querySelector('.start-btn');
+            const nameInput = document.querySelector('.name-input');
+            const takeTestBtn = document.getElementById('take-test-btn');
 
-            const averageScores = {
-                memoryGrid: 60,
-                logicFlips: 50,
-                patternRace: 55,
-                colorTracking: 65,
-                shootingStar: 70,
-                jetPacks: 60
-            };
 
-            function getGameScores() {
-                return {
-                    memoryGrid: Number(localStorage.getItem('score_memory_grid')) || 0,
-                    logicFlips: Number(localStorage.getItem('score_logic_flips')) || 0,
-                    patternRace: Number(localStorage.getItem('score_pattern_race')) || 0,
-                    colorTracking: Number(localStorage.getItem('score_color_tracking')) || 0,
-                    shootingStar: Number(localStorage.getItem('score_shooting_star')) || 0,
-                    jetPacks: Number(localStorage.getItem('score_jet_packs')) || 0
+            const TEST_QUESTIONS = [
+                // Memory (10)
+                { q: "Remember this sequence: 7, 2, 9. What was the second number?", a: ["7", "2", "9", "1"], correct: 1, skill: "memory" },
+                { q: "Which word did you see first? Apple, Banana, Carrot, Date", a: ["Apple", "Banana", "Carrot", "Date"], correct: 0, skill: "memory" },
+                { q: "What color was the square shown? (Imagine: Red, Blue, Green, Yellow)", a: ["Red", "Blue", "Green", "Yellow"], correct: 2, skill: "memory" },
+                { q: "Which animal was NOT in the list: Cat, Dog, Fish, Bird?", a: ["Cat", "Dog", "Fish", "Bird"], correct: 3, skill: "memory" },
+                { q: "What was the last number in this sequence: 3, 8, 1, 6?", a: ["3", "8", "1", "6"], correct: 3, skill: "memory" },
+                { q: "Which shape did you see? (Imagine: Circle, Square, Triangle, Star)", a: ["Circle", "Square", "Triangle", "Star"], correct: 2, skill: "memory" },
+                { q: "What was the third word? Table, Chair, Lamp, Sofa", a: ["Table", "Chair", "Lamp", "Sofa"], correct: 2, skill: "memory" },
+                { q: "Which fruit was missing? Apple, Orange, Grape, ?", a: ["Banana", "Pear", "Peach", "Mango"], correct: 1, skill: "memory" },
+                { q: "What was the color of the car? (Imagine: Blue, Red, Green, Black)", a: ["Blue", "Red", "Green", "Black"], correct: 0, skill: "memory" },
+                { q: "Which number was repeated? 4, 7, 4, 2", a: ["4", "7", "2", "None"], correct: 0, skill: "memory" },
+                // Logic (10)
+                { q: "What comes next? 2, 4, 6, ?", a: ["7", "8", "10", "12"], correct: 1, skill: "logic" },
+                { q: "If all Bloops are Bleeps, and all Bleeps are Blops, are all Bloops Blops?", a: ["Yes", "No", "Maybe", "Not enough info"], correct: 0, skill: "logic" },
+                { q: "Which does not belong? Square, Triangle, Circle, Rectangle", a: ["Square", "Triangle", "Circle", "Rectangle"], correct: 2, skill: "logic" },
+                { q: "If 5+3=8, what is 8-3?", a: ["5", "3", "8", "11"], correct: 0, skill: "logic" },
+                { q: "Which is the odd one out? Cat, Dog, Bird, Car", a: ["Cat", "Dog", "Bird", "Car"], correct: 3, skill: "logic" },
+                { q: "If you flip a coin twice, what is the chance both are heads?", a: ["1/2", "1/3", "1/4", "1/5"], correct: 2, skill: "logic" },
+                { q: "Which number is missing? 1, 3, 5, ?", a: ["6", "7", "8", "9"], correct: 1, skill: "logic" },
+                { q: "If all apples are red, and this is an apple, what color is it?", a: ["Green", "Red", "Yellow", "Blue"], correct: 1, skill: "logic" },
+                { q: "Which is heavier? 1kg of feathers or 1kg of steel?", a: ["Feathers", "Steel", "Same", "Neither"], correct: 2, skill: "logic" },
+                { q: "If 2x=10, what is x?", a: ["2", "5", "10", "20"], correct: 1, skill: "logic" },
+                // Attention (5)
+                { q: "Which letter is different? A A A A B A A", a: ["A", "B", "C", "D"], correct: 1, skill: "attention" },
+                { q: "How many 3s are in: 338333?", a: ["2", "3", "4", "5"], correct: 3, skill: "attention" },
+                { q: "What color was the flashing light? (Imagine: Red, Blue, Green, Yellow)", a: ["Red", "Blue", "Green", "Yellow"], correct: 1, skill: "attention" },
+                { q: "Which number did NOT appear? 1, 2, 3, 5", a: ["1", "2", "3", "4"], correct: 3, skill: "attention" },
+                { q: "Which shape flashed twice? Circle, Square, Triangle, Star", a: ["Circle", "Square", "Triangle", "Star"], correct: 1, skill: "attention" },
+                // Visual (5)
+                { q: "Which color is the lightest? Blue, Yellow, Black, Red", a: ["Blue", "Yellow", "Black", "Red"], correct: 1, skill: "visual" },
+                { q: "Which shape has 3 sides?", a: ["Square", "Circle", "Triangle", "Star"], correct: 2, skill: "visual" },
+                { q: "Which is a primary color? Green, Purple, Red, Orange", a: ["Green", "Purple", "Red", "Orange"], correct: 2, skill: "visual" },
+                { q: "Which is NOT a color? Cyan, Magenta, Chartreuse, Elephant", a: ["Cyan", "Magenta", "Chartreuse", "Elephant"], correct: 3, skill: "visual" },
+                { q: "Which is the largest? Dot, Line, Square, Circle", a: ["Dot", "Line", "Square", "Circle"], correct: 2, skill: "visual" }
+            ];
+
+
+            // Test state
+            let testState = { questions: [], current: 0, answers: [], scores: { memory: 0, logic: 0, attention: 0, visual: 0 } };
+
+            function shuffleArray(arr) {
+                for (let i = arr.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [arr[i], arr[j]] = [arr[j], arr[i]];
+                }
+            }
+
+            function getSkillEmoji(skill) {
+                switch (skill) {
+                    case 'memory': return '🧠';
+                    case 'logic': return '🧩';
+                    case 'attention': return '🎯';
+                    case 'visual': return '👁️';
+                    default: return '❓';
+                }
+            }
+
+            function capitalize(str) {
+                return str.charAt(0).toUpperCase() + str.slice(1);
+            }
+
+            function startTest() {
+                const area = document.getElementById('test-question-area');
+                const progress = document.getElementById('test-progress');
+                const resultDiv = document.getElementById('test-result');
+                resultDiv.style.display = 'none';
+                resultDiv.innerHTML = '';
+
+                let countdown = 3;
+                area.innerHTML = `<div style="font-size:40px;font-weight:700;margin:40px 0;text-align:center;">
+            <span style="display:inline-block;animation:bounce 0.6s infinite alternate;">🧠</span>
+            <br>Starting in <span id="test-countdown">${countdown}</span>...
+        </div>`;
+                progress.textContent = '';
+
+                const interval = setInterval(() => {
+                    countdown--;
+                    const countdownEl = document.getElementById('test-countdown');
+                    if (countdownEl) countdownEl.textContent = countdown;
+                    if (countdown === 0) {
+                        clearInterval(interval);
+                        // --- Ensure all questions are used before repeating any ---
+                        let allQuestions = [...TEST_QUESTIONS];
+
+                        shuffleArray(allQuestions);
+                        // If there are at least 15 questions, just pick the first 15 shuffled
+                        // If there are fewer than 15, repeat questions (but you have more than 15)
+                        testState.questions = allQuestions.slice(0, Math.min(15, allQuestions.length));
+
+                        testState.current = 0;
+                        testState.answers = [];
+                        testState.scores = { memory: 0, logic: 0, attention: 0, visual: 0 };
+                        showTestQuestion();
+                    }
+                }, 1000);
+            }
+
+            function showTestQuestion() {
+                const area = document.getElementById('test-question-area');
+                const progress = document.getElementById('test-progress');
+                if (testState.current >= testState.questions.length) {
+                    finishTest();
+                    return;
+                }
+                const q = testState.questions[testState.current];
+                area.innerHTML = `
+            <div style="font-size:22px;font-weight:600;margin-bottom:18px;">
+                <span style="font-size:28px;">${getSkillEmoji(q.skill)}</span>
+                ${testState.current + 1}. ${q.q}
+            </div>
+            <div class="test-answers">
+                ${q.a.map((ans, i) => `<button class="test-answer-btn" data-idx="${i}">${ans}</button>`).join('')}
+            </div>
+        `;
+                progress.innerHTML = `
+            <div style="margin-bottom:8px;">
+                <span style="font-size:18px;">${capitalize(q.skill)} Question</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width:${Math.round(((testState.current + 1) / testState.questions.length) * 100)}%; transition:width 0.3s;"></div>
+            </div>
+            <div style="margin-top:8px;font-size:15px;opacity:0.7;">${testState.current + 1} of ${testState.questions.length}</div>
+        `;
+                document.querySelectorAll('.test-answer-btn').forEach(btn => {
+                    btn.onclick = function () {
+                        const idx = Number(this.getAttribute('data-idx'));
+                        document.querySelectorAll('.test-answer-btn').forEach(b => b.disabled = true);
+                        if (idx === q.correct) {
+                            this.classList.add('correct');
+                            testState.scores[q.skill]++;
+                        } else {
+                            this.classList.add('wrong');
+                            document.querySelector(`.test-answer-btn[data-idx="${q.correct}"]`).classList.add('correct');
+                        }
+                        testState.answers.push(idx);
+                        setTimeout(() => {
+                            testState.current++;
+                            showTestQuestion();
+                        }, 900);
+                    };
+                });
+            }
+
+            function finishTest() {
+                const area = document.getElementById('test-question-area');
+                const progress = document.getElementById('test-progress');
+                const resultDiv = document.getElementById('test-result');
+                area.innerHTML = '';
+                progress.innerHTML = '';
+
+                const totalPerSkill = { memory: 0, logic: 0, attention: 0, visual: 0 };
+                testState.questions.forEach(q => totalPerSkill[q.skill]++);
+
+                let resultHtml = `<h3>Test Complete!</h3><p style="font-size:16px; opacity:0.8; margin-bottom: 25px;">Here's how you did:</p>`;
+                let totalScore = 0;
+                let skillCount = 0;
+                let skillPercents = {};
+
+                for (let skill in testState.scores) {
+                    if (totalPerSkill[skill] > 0) {
+                        const percent = Math.round((testState.scores[skill] / totalPerSkill[skill]) * 100);
+                        skillPercents[skill] = percent;
+                        resultHtml += `
+                    <div class="result-skill-bar-container">
+                        <div class="skill-name">
+                            <span>${getSkillEmoji(skill)} ${capitalize(skill)}</span>
+                            <span style="font-weight:bold;">${percent}%</span>
+                        </div>
+                        <div class="result-skill-bar">
+                            <div class="result-skill-fill" data-score="${percent}"></div>
+                        </div>
+                    </div>
+                `;
+                        totalScore += percent;
+                        skillCount++;
+                    }
+                }
+
+                const averageScore = skillCount > 0 ? Math.round(totalScore / skillCount) : 0;
+                resultHtml += `<div style="margin-top:30px;font-size:20px;"><b>Overall Score:</b> ${averageScore}%</div>`;
+                resultHtml += `<button id="test-finish-btn" class="start-btn" style="margin-top:25px;">Back to Dashboard</button>`;
+
+                resultDiv.innerHTML = resultHtml;
+                resultDiv.style.display = 'block';
+
+                // Animate the result bars
+                setTimeout(() => {
+                    document.querySelectorAll('.result-skill-fill').forEach(fill => {
+                        fill.style.width = fill.getAttribute('data-score') + '%';
+                    });
+                }, 100);
+
+                localStorage.setItem('test_skill_memory', skillPercents.memory || 0);
+                localStorage.setItem('test_skill_logic', skillPercents.logic || 0);
+                localStorage.setItem('test_skill_attention', skillPercents.attention || 0);
+                localStorage.setItem('test_skill_visual', skillPercents.visual || 0);
+
+                updateDashboardSkills();
+
+                document.getElementById('test-finish-btn').onclick = () => showScreen('dashboard');
+            }
+
+            // --- Core App Logic ---
+            function updateDashboardSkills() {
+                const dashboardGrid = document.querySelector('#dashboard-screen .dashboard-grid');
+                dashboardGrid.innerHTML = ''; // Clear existing cards
+
+                const skills = ['memory', 'logic', 'attention', 'visual'];
+                const skillIcons = {
+                    memory: 'fa-brain',
+                    logic: 'fa-calculator',
+                    attention: 'fa-bullseye',
+                    visual: 'fa-eye'
                 };
+                const skillColors = {
+                    memory: '#B13BFF',
+                    logic: '#FFCC00',
+                    attention: '#4CAF50',
+                    visual: '#FF9800'
+                };
+
+                let testTaken = false;
+
+                skills.forEach(skill => {
+                    const score = localStorage.getItem(`test_skill_${skill}`);
+                    if (score !== null) {
+                        testTaken = true;
+                        const scoreValue = parseInt(score, 10);
+                        const cardHTML = `
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas ${skillIcons[skill]}" style="color: ${skillColors[skill]};"></i>
+                            </div>
+                            <h3 class="card-title">${capitalize(skill)}</h3>
+                        </div>
+                        <div class="test-score-display">
+                            <p>Latest Test Score</p>
+                            <p>${scoreValue}%</p>
+                        </div>
+                    </div>
+                `;
+                        dashboardGrid.innerHTML += cardHTML;
+                    }
+                });
+
+                if (!testTaken) {
+                    dashboardGrid.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; font-size: 18px; opacity: 0.8; padding: 40px 20px;">You haven't taken the cognitive test yet. Click the button above to get your baseline scores!</p>`;
+                }
             }
 
             function renderAnalyticsCharts() {
-                const userScores = getGameScores();
-                const labels = [
-                    'Memory Grid',
-                    'Logic Flips',
-                    'Pattern Race',
-                    'Color Tracking',
-                    'Shooting Star',
-                    'Jet Packs'
-                ];
-                const userData = [
-                    userScores.memoryGrid,
-                    userScores.logicFlips,
-                    userScores.patternRace,
-                    userScores.colorTracking,
-                    userScores.shootingStar,
-                    userScores.jetPacks
-                ];
-                const avgData = [
-                    averageScores.memoryGrid,
-                    averageScores.logicFlips,
-                    averageScores.patternRace,
-                    averageScores.colorTracking,
-                    averageScores.shootingStar,
-                    averageScores.jetPacks
-                ];
+                // Get test scores from localStorage
+                const skills = ['memory', 'logic', 'attention', 'visual'];
+                const skillLabels = ['Memory', 'Logic', 'Attention', 'Visual'];
+                const skillColors = ['#B13BFF', '#FFCC00', '#4CAF50', '#FF9800'];
 
-                // If all user scores are 0, show average as user's score (first time)
-                const allZero = userData.every(score => score === 0);
-                const displayUserData = allZero ? avgData : userData;
-                const displayUserDataScaled = displayUserData.map(v => v / 100);
-                const avgDataScaled = avgData.map(v => v / 100);
+                // Get scores or default to 0
+                const scores = skills.map(skill => Number(localStorage.getItem(`test_skill_${skill}`)) || 0);
 
-                // Remove existing charts if present
-                if (window.analyticsChart && typeof window.analyticsChart.destroy === 'function') {
-                    window.analyticsChart.destroy();
-                }
-                if (window.radarChart && typeof window.radarChart.destroy === 'function') {
-                    window.radarChart.destroy();
-                }
-
-                // Bar Chart: Cognitive Performance
-                const ctxBar = document.getElementById('analyticsChart').getContext('2d');
-                window.analyticsChart = new Chart(ctxBar, {
+                // --- Cognitive Performance Bar Chart ---
+                const ctx1 = document.getElementById('analyticsChart').getContext('2d');
+                if (window.cognitiveBarChart) window.cognitiveBarChart.destroy();
+                window.cognitiveBarChart = new Chart(ctx1, {
                     type: 'bar',
                     data: {
-                        labels: labels,
-                        datasets: [
-                            {
-                                label: 'Your Score',
-                                data: displayUserData,
-                                backgroundColor: [
-                                    '#FFD600', // bright yellow
-                                    '#FF3D00', // bright orange-red
-                                    '#00E676', // bright green
-                                    '#2979FF', // bright blue
-                                    '#FFEA00', // bright yellow
-                                    '#00B8D4'  // bright cyan
-                                ]
-                            },
-                            {
-                                label: 'Average',
-                                data: avgData,
-                                backgroundColor: 'rgba(255, 204, 0, 0.3)'
-                            }
-                        ]
+                        labels: skillLabels,
+                        datasets: [{
+                            label: 'Test Score (%)',
+                            data: scores,
+                            backgroundColor: skillColors,
+                            borderRadius: 8,
+                        }]
                     },
                     options: {
                         responsive: true,
                         plugins: {
-                            legend: {
-                                labels: {
-                                    color: '#fff', // White legend text
-                                    font: { size: 16 }
-                                }
-                            }
+                            legend: { display: false },
+                            title: { display: false }
                         },
                         scales: {
                             y: {
                                 beginAtZero: true,
                                 max: 100,
-                                ticks: {
-                                    color: '#fff' // <-- White y-axis labels
-                                },
-                                title: {
-                                    display: true,
-                                    text: 'Score',
-                                    color: '#fff' // <-- White y-axis title (optional)
-                                }
+                                ticks: { color: '#fff', font: { size: 14 } },
+                                grid: { color: 'rgba(255,255,255,0.1)' }
                             },
                             x: {
-                                ticks: {
-                                    color: '#fff' // <-- White x-axis labels
-                                },
-                                title: {
-                                    display: false
-                                }
+                                ticks: { color: '#fff', font: { size: 14 } },
+                                grid: { color: 'rgba(255,255,255,0.1)' }
                             }
                         }
                     }
                 });
-                // Radar Chart: Skill Distribution
-                // Add a canvas for radar chart if not present
-                let radarCanvas = document.getElementById('radarChart');
-                if (!radarCanvas) {
-                    const radarContainer = document.querySelectorAll('.chart-container')[1];
-                    radarCanvas = document.createElement('canvas');
-                    radarCanvas.id = 'radarChart';
-                    radarCanvas.width = 400;
-                    radarCanvas.height = 250;
-                    radarContainer.querySelector('.chart-placeholder').innerHTML = '';
-                    radarContainer.querySelector('.chart-placeholder').appendChild(radarCanvas);
-                }
-                const ctxRadar = radarCanvas.getContext('2d');
-                window.radarChart = new Chart(ctxRadar, {
+
+                // --- Skill Distribution Radar Chart ---
+                const ctx2 = document.getElementById('radarChart').getContext('2d');
+                if (window.skillRadarChart) window.skillRadarChart.destroy();
+                window.skillRadarChart = new Chart(ctx2, {
                     type: 'radar',
                     data: {
-                        labels: labels,
-                        datasets: [
-                            {
-                                label: 'Your Skill',
-                                data: displayUserDataScaled,
-                                backgroundColor: 'rgba(255, 193, 7, 0.3)', // Bright yellow
-                                borderColor: 'rgba(255, 193, 7, 1)',       // Bright yellow
-                                pointBackgroundColor: 'rgba(255, 193, 7, 1)',
-                                pointBorderColor: '#fff',
-                                pointHoverBackgroundColor: '#fff',
-                                pointHoverBorderColor: 'rgba(255, 193, 7, 1)'
-                            },
-                            {
-                                label: 'Average',
-                                data: avgDataScaled,
-                                backgroundColor: 'rgba(33, 150, 243, 0.3)', // Bright blue
-                                borderColor: 'rgba(33, 150, 243, 1)',       // Bright blue
-                                pointBackgroundColor: 'rgba(33, 150, 243, 1)',
-                                pointBorderColor: '#fff',
-                                pointHoverBackgroundColor: '#fff',
-                                pointHoverBorderColor: 'rgba(33, 150, 243, 1)'
-                            }
-                        ]
+                        labels: skillLabels,
+                        datasets: [{
+                            label: 'Skill Distribution',
+                            data: scores,
+                            backgroundColor: 'rgba(177,59,255,0.2)',
+                            borderColor: '#B13BFF',
+                            pointBackgroundColor: skillColors,
+                            pointBorderColor: '#fff',
+                            pointRadius: 6,
+                            borderWidth: 3,
+                            fill: true
+                        }]
                     },
                     options: {
                         responsive: true,
                         plugins: {
-                            legend: {
-                                labels: {
-                                    color: '#fff', // White legend text
-                                    font: { size: 16 }
-                                }
-                            }
+                            legend: { display: false },
+                            title: { display: false }
                         },
                         scales: {
                             r: {
+                                angleLines: { color: 'rgba(255,255,255,0.1)' },
+                                grid: { color: 'rgba(255,255,255,0.15)' },
+                                pointLabels: { color: '#fff', font: { size: 15 } },
                                 min: 0,
-                                max: 1,
-                                ticks: {
-                                    color: '#fff', // White scale numbers
-                                    stepSize: 0.2,
-                                    callback: v => v.toFixed(1)
-                                },
-                                pointLabels: {
-                                    color: '#fff', // White axis labels
-                                    font: { size: 15, weight: 'bold' }
-                                },
-                                grid: {
-                                    color: 'rgba(255,255,255,0.2)'
-                                },
-                                angleLines: {
-                                    color: 'rgba(255,255,255,0.3)'
-                                }
+                                max: 100,
+                                ticks: { color: '#fff', stepSize: 20, font: { size: 13 } }
                             }
                         }
                     }
                 });
             }
 
-            // Function to show a specific screen
-            function showScreen(screenId) {
-                // Hide all screens
-                Object.values(screens).forEach(screen => {
-                    screen.classList.remove('active');
-                });
 
-                if (screenId === 'dashboard') {
-                    const username = localStorage.getItem('neuranest_username') || 'User';
-                    const greeting = document.getElementById('dashboard-greeting');
-                    if (greeting) {
-                        greeting.textContent = `Hi ${username}! This is your cognitive dashboard`;
-                    }
-                }
-                // Show the requested screen
+            // --- Navigation & Events ---
+            function showScreen(screenId) {
+                Object.values(screens).forEach(screen => screen.classList.remove('active'));
                 if (screens[screenId]) {
                     screens[screenId].classList.add('active');
                 }
-
+                if (screenId === 'dashboard') {
+                    const username = localStorage.getItem('neuranest_username') || 'User';
+                    const greeting = document.getElementById('dashboard-greeting');
+                    if (greeting) greeting.textContent = `Hi ${username}! This is your cognitive dashboard`;
+                    updateDashboardSkills();
+                }
                 if (screenId === 'analytics') {
                     renderAnalyticsCharts();
                 }
-
-                // Update active button
                 navButtons.forEach(btn => {
-                    btn.classList.remove('active');
-                    if (btn.getAttribute('data-screen') === screenId) {
-                        btn.classList.add('active');
-                    }
+                    btn.classList.toggle('active', btn.getAttribute('data-screen') === screenId);
                 });
-
             }
 
-
-
-            // Set up navigation button event listeners
             navButtons.forEach(button => {
                 button.addEventListener('click', function () {
-                    const screenId = this.getAttribute('data-screen');
-                    showScreen(screenId);
+                    showScreen(this.getAttribute('data-screen'));
                 });
             });
 
-            // Set up start button
-            const startBtn = document.querySelector('.start-btn');
             startBtn.addEventListener('click', function () {
-                const nameInput = document.querySelector('.name-input');
                 if (nameInput.value.trim() !== '') {
                     localStorage.setItem('neuranest_username', nameInput.value.trim());
                     showScreen('dashboard');
                 } else {
                     nameInput.style.borderColor = '#FF5252';
-                    setTimeout(() => {
-                        nameInput.style.borderColor = '#B13BFF';
-                    }, 1000);
+                    setTimeout(() => { nameInput.style.borderColor = 'var(--accent)'; }, 1000);
                 }
             });
+
+            takeTestBtn.addEventListener('click', function () {
+                showScreen('test');
+                startTest();
+            });
+
+            nameInput.addEventListener('keydown', e => { if (e.key === 'Enter') startBtn.click(); });
 
             // Set up game card animations
             const gameCards = document.querySelectorAll('.game-card');
