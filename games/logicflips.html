@@ -737,6 +737,28 @@
                 const target = Math.random() > 0.5;
                 gatesData[gatesData.length - 1].target = target;
 
+                // Ensure last gate's output is NOT equal to the target
+                // If it is, flip input2 (or input1 if you prefer)
+                let lastGate = gatesData[gatesData.length - 1];
+                if (lastGate.output === lastGate.target) {
+                    lastGate.input2 = !lastGate.input2;
+                    // If not the first gate, input1 should be previous gate's output
+                    if (gatesData.length > 1) {
+                        lastGate.input1 = gatesData[gatesData.length - 2].output;
+                    }
+                    let requiredInput2;
+                    if (lastGate.type.name === "AND") {
+                        requiredInput2 = lastGate.target ? lastGate.input1 : !lastGate.input1 || false;
+                    } else if (lastGate.type.name === "OR") {
+                        requiredInput2 = lastGate.target ? !lastGate.input1 || true : false;
+                    } else if (lastGate.type.name === "XOR") {
+                        requiredInput2 = lastGate.input1 !== lastGate.target;
+                    }
+                    lastGate.input2 = requiredInput2;
+                    lastGate.output = lastGate.type.operation(lastGate.input1, lastGate.input2);
+
+                }
+
                 // Create gate elements
                 gatesData.forEach((gate, index) => {
                     const gateElement = document.createElement('div');
@@ -767,7 +789,13 @@
                     input1.textContent = gate.input1 ? 'T' : 'F';
                     input1.dataset.gate = index;
                     input1.dataset.input = 'input1';
-                    input1.addEventListener('click', flipInput);
+                    // Only add event listener if NOT last gate
+                    if (index !== gatesData.length - 1) {
+                        input1.addEventListener('click', flipInput);
+                    } else {
+                        input1.style.cursor = "not-allowed";
+                        input1.style.opacity = "0.6";
+                    }
 
                     // Input 2
                     const input2 = document.createElement('div');
@@ -775,7 +803,13 @@
                     input2.textContent = gate.input2 ? 'T' : 'F';
                     input2.dataset.gate = index;
                     input2.dataset.input = 'input2';
-                    input2.addEventListener('click', flipInput);
+                    // Only add event listener if NOT last gate
+                    if (index !== gatesData.length - 1) {
+                        input2.addEventListener('click', flipInput);
+                    } else {
+                        input2.style.cursor = "not-allowed";
+                        input2.style.opacity = "0.6";
+                    }
 
                     gateInputs.appendChild(input1);
                     gateInputs.appendChild(input2);
