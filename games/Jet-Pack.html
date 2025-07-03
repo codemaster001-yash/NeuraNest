@@ -23,11 +23,27 @@
             overflow: hidden;
             /* Prevent body scroll */
             flex-direction: column;
-            padding: 1rem;
+            padding: 0;
         }
 
-        /* Game Container Styling */
+        h1 {
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+            z-index: 20;
+        }
+
+        :root {
+            --game-window-width: 60vw;
+            --game-window-height: calc(100vh - 9.5rem);
+            /* Adjust 4.5rem to match your header height if needed */
+        }
+
         .game-container {
+            flex: 1 1 auto;
+            width: var(--game-window-width);
+            height: var(--game-window-height);
+            max-width: var(--game-window-width);
+            max-height: var(--game-window-height);
             background-color: #2d3748;
             border: 8px solid #4a5568;
             border-radius: 1.5rem;
@@ -35,26 +51,126 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            width: 100%;
-            max-width: 700px;
-            /* Increased from 500px */
-            aspect-ratio: 18 / 10;
-            /* Slightly wider aspect ratio */
+            justify-content: center;
             position: relative;
             overflow: hidden;
         }
 
+        .hidden {
+            display: none !important;
+        }
+
+        /* ...existing code... */
+        .pixel-btn {
+            background: #222;
+            color: #fff;
+            border: 4px solid #FFD700;
+            border-radius: 0.25rem;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 1rem;
+            padding: 0.75em 2em;
+            margin: 0.5em 0;
+            box-shadow:
+                0 4px #b8860b,
+                0 8px #000,
+                4px 0 #b8860b,
+                8px 0 #000;
+            text-shadow: 2px 2px #000;
+            letter-spacing: 0.05em;
+            transition: transform 0.1s, box-shadow 0.1s;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .pixel-btn:hover,
+        .pixel-btn:focus {
+            background: #FFD700;
+            color: #222;
+            border-color: #222;
+            transform: translateY(-2px) scale(1.04);
+            box-shadow:
+                0 2px #b8860b,
+                0 4px #000,
+                2px 0 #b8860b,
+                4px 0 #000;
+        }
+
+        /* Welcome screen improvements */
+        #start-screen {
+            width: 100%;
+            max-width: 95vw;
+            max-height: 95vh;
+            box-sizing: border-box;
+            padding: 1.5em 1em;
+            gap: 1.2em;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #start-screen h2 {
+            font-size: 1.3rem;
+            color: #FFD700;
+            margin-bottom: 0.7em;
+            text-shadow: 2px 2px #000;
+            word-break: break-word;
+            max-width: 90%;
+        }
+
+        #start-screen p {
+            font-size: 0.95rem;
+            color: #e2e8f0;
+            margin-bottom: 0.5em;
+            line-height: 1.5;
+            text-shadow: 1px 1px #111;
+            max-width: 90%;
+            word-break: break-word;
+        }
+
+        #start-screen .pixel-btn {
+            width: 90%;
+            max-width: 320px;
+            min-width: 120px;
+            box-sizing: border-box;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        #start-screen .mt-4 {
+            margin-top: 1em;
+        }
+
+        #start-screen .text-xs {
+            font-size: 0.8rem;
+            color: #FFD700;
+            text-shadow: 1px 1px #000;
+            max-width: 90%;
+            word-break: break-word;
+        }
+
         /* Canvas Styling - fixed virtual resolution, scaled by CSS */
         canvas {
-            background-color: #000000;
-            /* Black background for pixel art */
-            image-rendering: pixelated;
-            /* Crucial for pixel art */
-            width: 100%;
-            height: 100%;
+            width: 100% !important;
+            height: 100% !important;
             display: block;
+            background-color: #000;
+            image-rendering: pixelated;
             border-radius: 0.5rem;
-            /* Slightly rounded corners for canvas */
+        }
+
+        #score-display {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: #FFD700;
+            text-shadow:
+                2px 2px 0 #000,
+                0 0 12px #FFD700,
+                0 0 4px #fff;
+            letter-spacing: 0.05em;
+            margin-right: 1.5rem;
+            margin-top: 0.2em;
+            font-family: 'Press Start 2P', cursive;
         }
 
         /* Overlay Modals (Start, Game Over, Instructions) */
@@ -65,7 +181,6 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.85);
-            /* Semi-transparent black */
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -75,7 +190,9 @@
             padding: 1rem;
             box-sizing: border-box;
             border-radius: 1.5rem;
-            /* Match container border-radius */
+            max-width: 100%;
+            max-height: 100%;
+            overflow-y: auto;
         }
 
         .overlay h2 {
@@ -112,6 +229,50 @@
             z-index: 5;
         }
 
+        .heart {
+            font-size: 2.2rem;
+            /* Bigger hearts */
+            color: #ff3366;
+            /* Bright pink/red */
+            text-shadow:
+                0 2px 6px #ffb6c1,
+                /* Glow */
+                0 4px 0 #b3003c,
+                /* 3D shadow below */
+                2px 2px 0 #fff,
+                /* Highlight right */
+                -2px -2px 0 #ffb6c1;
+            /* Highlight left/top */
+            filter: drop-shadow(0 0 8px #ff69b4);
+            margin-right: 0.1em;
+            margin-left: 0.1em;
+            vertical-align: middle;
+            transition: transform 0.1s;
+            display: inline-block;
+        }
+
+        .pixel-heart {
+            display: inline-block;
+            margin: 0 0.15em;
+            width: 2.2rem;
+            height: 2rem;
+            vertical-align: middle;
+        }
+
+        .pixel-heart svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .heart:last-child {
+            margin-right: 0;
+        }
+
+        .heart:active {
+            transform: scale(1.2);
+        }
+
         /* Mobile Controls */
         .mobile-controls {
             display: flex;
@@ -127,6 +288,7 @@
             /* More padding on sides */
             box-sizing: border-box;
         }
+
 
         .mobile-controls button {
             @apply bg-purple-500 hover:bg-purple-600 text-white font-bold py-4 px-8 rounded-full shadow-lg transition duration-200 ease-in-out transform hover:scale-105 active:scale-95 text-lg opacity-90;
@@ -147,6 +309,31 @@
             @apply bg-green-600 hover:bg-green-700;
         }
 
+        @media (max-width: 900px) {
+            .game-container {
+                border-width: 4px;
+                border-radius: 1rem;
+            }
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.2rem;
+                margin-top: 0.5rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .game-container {
+                border-width: 2px;
+                border-radius: 0.5rem;
+                height: calc(100vh - 2.5rem);
+            }
+
+            canvas {
+                border-radius: 0.25rem;
+            }
+        }
+
         /* Hide mobile controls on larger screens */
         @media (min-width: 768px) {
             .mobile-controls {
@@ -157,17 +344,22 @@
 </head>
 
 <body class="bg-gray-900 text-gray-100 flex flex-col items-center justify-center min-h-screen p-4">
-
+    <audio id="ding-sound" src="ding.mp3" preload="auto"></audio>
     <h1 class="text-3xl sm:text-4xl text-blue-400 mb-6 text-center leading-tight">JETPACK MANIA!</h1>
 
+    <div id="game-hud" class="hud hidden">
+        <div id="score-display">SCORE: 0</div>
+    </div>
+
     <div class="game-container">
-        <div id="game-hud" class="hud hidden">
-            <div id="score-display">SCORE: 0</div>
-            <div id="lifelines" style="font-size: 1.2rem; color: #ff4d4f; display: flex; gap: 0.3em;">
-                <span class="heart">&hearts;</span>
-                <span class="heart">&hearts;</span>
-                <span class="heart">&hearts;</span>
-            </div>
+        <div id="lifelines" style="font-size: 1.2rem; color: #ff4d4f; display: flex; gap: 0.3em;">
+            <span class="heart">&hearts;</span>
+            <span class="heart">&hearts;</span>
+            <span class="heart">&hearts;</span>
+        </div>
+        <div id="pause-overlay" class="overlay hidden">
+            <h2>PAUSED</h2>
+            <p>Press ENTER to resume</p>
         </div>
 
         <canvas id="gameCanvas"></canvas>
@@ -182,8 +374,8 @@
             <h2>Welcome to Jetpack Mania!</h2>
             <p>Soar through the pixel skies, avoid obstacles, and collect coins!</p>
             <p><strong>GOAL:</strong> Fly as far as possible and collect as many coins as you can!</p>
-            <button id="show-instructions-btn">INSTRUCTIONS</button>
-            <button id="start-game-btn" class="mt-2">START GAME</button>
+            <button id="show-instructions-btn" class="pixel-btn">INSTRUCTIONS</button>
+            <button id="start-game-btn" class="pixel-btn mt-2">START GAME</button>
             <p class="mt-4 text-xs">Personal Best: <span id="personal-best-display">0</span></p>
         </div>
 
@@ -203,11 +395,20 @@
 
         <!-- Game Over Screen -->
         <div id="game-over-screen" class="overlay hidden">
-            <h2>GAME OVER!</h2>
-            <p>Your jetpack ran out of fuel!</p>
-            <p>Final Score: <span id="final-score-display">0</span></p>
-            <p>Personal Best: <span id="game-over-personal-best-display">0</span></p>
-            <button id="restart-game-btn">RESTART</button>
+            <h2 style="font-size:2.2rem; color:#FFD700; text-shadow:2px 2px #000; margin-bottom:1.2rem;">GAME OVER!</h2>
+            <p style="font-size:1.1rem; color:#fff; margin-bottom:1.5rem; text-shadow:1px 1px #222;">You flew too
+                bravely!</p>
+            <div style="margin-bottom:1.2rem;">
+                <span style="font-size:1.1rem; color:#FFD700; text-shadow:1px 1px #000;">Final Score:</span>
+                <span id="final-score-display"
+                    style="font-size:2.5rem; color:#ff3366; font-weight:bold; text-shadow:2px 2px #fff, 0 0 8px #ff3366;">0</span>
+            </div>
+            <div style="margin-bottom:2rem;">
+                <span style="font-size:1.1rem; color:#FFD700; text-shadow:1px 1px #000;">Personal Best:</span>
+                <span id="game-over-personal-best-display"
+                    style="font-size:2rem; color:#63e6be; font-weight:bold; text-shadow:2px 2px #000;">0</span>
+            </div>
+            <button id="restart-game-btn" class="pixel-btn" style="margin-top:1.5rem;">RESTART</button>
         </div>
     </div>
 
@@ -222,7 +423,7 @@
         // --- Game Setup ---
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
-
+        const MAX_LIFELINES = 5;
         // Virtual game resolution (low resolution for pixel art)
         const GAME_WIDTH = 210;   // Increased from 160
         const GAME_HEIGHT = 120;  // Increased from 100
@@ -250,7 +451,38 @@
         const countdownOverlay = document.getElementById('countdown-overlay');
         const countdownNumber = document.getElementById('countdown-number');
 
-
+        //pixel style hearts
+        const heartSVG = `
+        <svg viewBox="0 0 18 16" width="32" height="28" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle;">
+        <!-- White outline -->
+            <rect x="4" y="0" width="4" height="2" fill="#000000"/>
+            <rect x="10" y="0" width="4" height="2" fill="#000000"/>
+            <rect x="2" y="2" width="4" height="2" fill="#000000"/>
+            <rect x="6" y="2" width="6" height="2" fill="#000000"/>
+            <rect x="14" y="2" width="2" height="2" fill="#000000"/>
+            <rect x="0" y="4" width="2" height="2" fill="#000000"/>
+            <rect x="2" y="4" width="14" height="2" fill="#000000"/>
+            <rect x="16" y="4" width="2" height="2" fill="#000000"/>
+            <rect x="0" y="6" width="2" height="2" fill="#000000"/>
+            <rect x="2" y="6" width="14" height="2" fill="#000000"/>
+            <rect x="16" y="6" width="2" height="2" fill="#000000"/>
+            <rect x="2" y="8" width="14" height="2" fill="#000000"/>
+            <rect x="4" y="10" width="10" height="2" fill="#000000"/>
+            <rect x="6" y="12" width="6" height="2" fill="#000000"/>
+            <rect x="8" y="14" width="2" height="2" fill="#000000"/>
+            <!-- Red fill -->
+            <rect x="5" y="1" width="2" height="1" fill="#ff2222"/>
+            <rect x="11" y="1" width="2" height="1" fill="#ff2222"/>
+            <rect x="3" y="3" width="4" height="2" fill="#ff2222"/>
+            <rect x="7" y="3" width="4" height="2" fill="#ff2222"/>
+            <rect x="13" y="3" width="2" height="2" fill="#ff2222"/>
+            <rect x="2" y="5" width="14" height="2" fill="#ff2222"/>
+            <rect x="2" y="7" width="14" height="2" fill="#ff2222"/>
+            <rect x="3" y="9" width="12" height="2" fill="#ff2222"/>
+            <rect x="5" y="11" width="8" height="2" fill="#ff2222"/>
+            <rect x="7" y="13" width="4" height="2" fill="#ff2222"/>
+        </svg>
+        `;
         // Mobile Controls
         const moveLeftBtn = document.getElementById('move-left-btn');
         const moveRightBtn = document.getElementById('move-right-btn');
@@ -264,14 +496,14 @@
             lifelinesDisplay.innerHTML = '';
             for (let i = 0; i < lifelines; i++) {
                 const heart = document.createElement('span');
-                heart.className = 'heart';
-                heart.innerHTML = '&hearts;';
+                heart.className = 'pixel-heart';
+                heart.innerHTML = heartSVG;
                 lifelinesDisplay.appendChild(heart);
             }
         }
 
         // --- Game State Variables --- Jetpack speed controls
-        let gameState = 'START'; // START, PLAYING, GAME_OVER
+        let gameState = 'START'; // START, PLAYING, GAME_OVER, PAUSED
 
         let player = {
             x: GAME_WIDTH / 2 - 4,
@@ -283,6 +515,9 @@
             velocityY: 0,
             gravity: 0.009, // Slower fall speed
             jetpackThrust: -0.25, // Smaller, slower jumps
+            invincible: false,
+            invincibleTimer: 0,
+            lastObstacleHit: null // Track last obstacle hit
         };
 
         let obstacles = [];
@@ -299,6 +534,8 @@
             jetpack: false
         };
 
+        // Add this near your other state variables
+        let nextGameSpeedScoreThreshold = 100;
         let obstacleSpawnTimer = 0;
         let obstacleSpawnInterval = 1500; // ms between obstacle spawns
         let coinSpawnTimer = 0;
@@ -379,8 +616,11 @@
             score = 0;
             obstacleSpawnTimer = Date.now(); // Prevent immediate obstacle spawn
             coinSpawnTimer = Date.now();
-            gameSpeed = 1;
-            lifelines = 3;
+            gameSpeed = 1; // <-- This resets the game speed!
+            nextGameSpeedScoreThreshold = 100; // Reset threshold on new game
+            obstacleSpawnInterval = 1500; // <-- Reset obstacle interval
+            coinSpawnInterval = 700;      // <-- Reset coin interval
+            lifelines = MAX_LIFELINES;
             updateHUD();
             updateLifelinesDisplay();
             personalBest = localStorage.getItem('jetpackManiaBestScore') ? parseInt(localStorage.getItem('jetpackManiaBestScore')) : 0;
@@ -393,14 +633,13 @@
             gameState = 'PLAYING';
             startScreen.classList.add('hidden');
             hud.classList.remove('hidden');
-            gameLoop();
         }
 
         function gameOver() {
             gameState = 'GAME_OVER';
             hud.classList.add('hidden');
             gameOverScreen.classList.remove('hidden');
-            finalScoreDisplay.textContent = score;
+            finalScoreDisplay.textContent = Math.floor(score);
 
             if (score > personalBest) {
                 personalBest = score;
@@ -428,7 +667,7 @@
                     y: 0,
                     width: obstacleWidth,
                     height: topHeight,
-                    color: '#FF2222' // Bright red
+                    color: '#F97A00' // Bright red
                 });
             }
 
@@ -440,7 +679,7 @@
                     y: topHeight + gap,
                     width: obstacleWidth,
                     height: bottomHeight,
-                    color: '#FF2222' // Bright red
+                    color: '#F97A00' // Bright red
                 });
             }
         }
@@ -493,7 +732,7 @@
             // Update player horizontal movement
             player.speedX = 0;
             // The actual player horizontal speed will be relative to gameSpeed
-            const horizontalMoveSpeed = 1.0; // Base speed, not directly scaled by gameSpeed here
+            const horizontalMoveSpeed = 0.3; // Base speed, not directly scaled by gameSpeed here
             if (keys['ArrowLeft'] || touchControls.left) {
                 player.speedX = -horizontalMoveSpeed;
             }
@@ -507,13 +746,82 @@
             // Apply gravity
             player.velocityY += player.gravity; // Gravity is constant, not scaled by gameSpeed directly
 
-            // Apply jetpack thrust
+            // Apply Jetpack thrust (hold to fly)
             if (keys[' '] || touchControls.jetpack) {
                 player.velocityY = player.jetpackThrust; // Thrust is constant
                 createJetpackFlame(player.x, player.y); // Create flame particles
             }
 
+            // Horizontal movement
+            player.x += player.speedX;
+            player.x = Math.max(0, Math.min(GAME_WIDTH - player.width, player.x));
+
+            // Save previous Y for collision response
+            let prevY = player.y;
             player.y += player.velocityY;
+
+            // Check for ground/ceiling collision
+            if (player.y + player.height > GAME_HEIGHT - 4) {
+                player.y = GAME_HEIGHT - 4 - player.height;
+                player.velocityY = 0;
+            }
+            if (player.y < 4) {
+                player.y = 4;
+                player.velocityY = 0;
+            }
+
+            // --- SOLID OBSTACLE COLLISION ---
+            let collidedObstacle = null;
+            for (let obstacle of obstacles) {
+                if (
+                    player.x < obstacle.x + obstacle.width &&
+                    player.x + player.width > obstacle.x &&
+                    player.y < obstacle.y + obstacle.height &&
+                    player.y + player.height > obstacle.y
+                ) {
+                    // Determine collision side (vertical or horizontal)
+                    let fromTop = prevY + player.height <= obstacle.y;
+                    let fromBottom = prevY >= obstacle.y + obstacle.height;
+                    if (fromTop) {
+                        // Land on top of obstacle
+                        player.y = obstacle.y - player.height;
+                        player.velocityY = 0;
+                    } else if (fromBottom) {
+                        // Hit from below
+                        player.y = obstacle.y + obstacle.height;
+                        player.velocityY = 0.5; // Push down a bit
+                    } else {
+                        // Hit from side, push out
+                        if (player.x + player.width / 2 < obstacle.x + obstacle.width / 2) {
+                            player.x = obstacle.x - player.width;
+                        } else {
+                            player.x = obstacle.x + obstacle.width;
+                        }
+                        player.speedX = 0;
+                    }
+                    collidedObstacle = obstacle;
+                    break;
+                }
+            }
+
+            // Life loss logic (only if not invincible and new obstacle)
+            if (
+                collidedObstacle &&
+                !player.invincible &&
+                player.lastObstacleHit !== collidedObstacle
+            ) {
+                lifelines--;
+                updateLifelinesDisplay();
+                document.getElementById('ding-sound').currentTime = 0;
+                document.getElementById('ding-sound').play();
+                player.invincible = true;
+                player.invincibleTimer = 60; // ~1 second at 60fps
+                player.lastObstacleHit = collidedObstacle;
+                if (lifelines <= 0) {
+                    gameOver();
+                    return;
+                }
+            }
 
             // Check for ground/ceiling collision
             if (player.y + player.height > GAME_HEIGHT - 4) { // 4 is ground thickness
@@ -554,8 +862,10 @@
                 player.invincibleTimer--;
                 if (player.invincibleTimer <= 0) {
                     player.invincible = false;
+                    player.lastObstacleHit = null;
                 }
             }
+
 
             // Update coins
             coins = coins.filter(coin => {
@@ -586,7 +896,7 @@
                 spawnObstacle();
                 obstacleSpawnTimer = Date.now();
                 // Gradually increase difficulty (reduce interval, but not below a minimum)
-                obstacleSpawnInterval = Math.max(600, obstacleSpawnInterval - 10 * gameSpeed); // More aggressive reduction
+                obstacleSpawnInterval = Math.max(900, obstacleSpawnInterval - 5); // or another small constant // More aggressive reduction
             }
 
             // Coin spawning logic
@@ -599,9 +909,12 @@
             score += 0.1 * gameSpeed;
             updateHUD();
 
-            // Gradually increase game speed
-            gameSpeed += 0.0001; // Small increment
-            gameSpeed = Math.min(3.0, gameSpeed); // Max speed limit, adjusted slightly
+            // Gradually change game speed
+            if (score >= nextGameSpeedScoreThreshold) {
+                gameSpeed += 0.1; // Or any increment you prefer
+                gameSpeed = Math.min(2.0, gameSpeed); // Max speed limit
+                nextGameSpeedScoreThreshold += 100;
+            }
         }
 
         function startCountdownAndGame() {
@@ -627,6 +940,12 @@
             }, 1000);
         }
 
+        function showPauseOverlay() {
+            document.getElementById('pause-overlay').classList.remove('hidden');
+        }
+        function hidePauseOverlay() {
+            document.getElementById('pause-overlay').classList.add('hidden');
+        }
         function render() {
             ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear entire canvas
 
@@ -634,7 +953,7 @@
             drawPixelRect(0, 0, GAME_WIDTH, 4, '#B22222'); // Firebrick red
 
             // Draw ground (bottom)
-            drawPixelRect(0, GAME_HEIGHT - 4, GAME_WIDTH, 4, '#556B2F'); // Dark Green
+            drawPixelRect(0, GAME_HEIGHT - 4, GAME_WIDTH, 4, '#B22222'); // Dark Green
 
             // Draw player
             drawPixelArt(player.x, player.y, playerPixelArt);
@@ -677,6 +996,20 @@
             if (e.key === ' ' && gameState === 'PLAYING') {
                 e.preventDefault(); // Prevent spacebar from scrolling page
             }
+            // Pressing Enter on Game Over screen triggers restart
+            if (e.key === 'Enter') {
+                if (gameState === 'GAME_OVER') {
+                    restartGameBtn.click();
+                } else if (gameState === 'START') {
+                    startGameBtn.click();
+                } else if (gameState === 'PLAYING') {
+                    gameState = 'PAUSED';
+                    showPauseOverlay();
+                } else if (gameState === 'PAUSED') {
+                    gameState = 'PLAYING';
+                    hidePauseOverlay();
+                }
+            }
         });
 
         document.addEventListener('keyup', (e) => {
@@ -716,6 +1049,7 @@
         };
 
     </script>
+
 </body>
 
 </html>
